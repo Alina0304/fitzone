@@ -1,0 +1,16 @@
+{
+  "name": "testfit3",
+  "version": "1.0.0",
+  "description": "full stack fitSait",
+  "scripts": {
+    "start": "node app.js",
+    "server": "nodemon app.js",
+    "client": "cd client && npm run start",
+    "dev": "concurrently \"npm run server\" \"npm run client\""
+  },
+  "keywords": [
+    "fittest"
+  ],
+  "author": "Alina Scheglevatykh <alinka030499@mail.ru>",
+  "license": "ISC"
+}
