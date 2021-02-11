@@ -14,7 +14,7 @@ router.get(
     '/fitzone',
     async (req, res) => {
         try{
-            const trener="SELECT trener.idtrener,trener.fio_trener,trener.stag,trener.phone,trener.img,idzanytie, zanytie.idtrenera, zanytie.datetime, zanytie.numberzal, zanytie.nazvanie, zanytie.opisanie, zanytie.img FROM fit.trener,fit.zanytie;"
+            const trener="SELECT zanytie.idzanytie, zanytie.idtrenera, zanytie.datetime, zanytie.numberzal, zanytie.nazvanie,zanytie.img, zanytie.opisanie FROM fit.zanytie;"
             db.query(trener, [],(err, result)=>{
                 console.log("Error",err)
                 console.log("Результат выборки",result);

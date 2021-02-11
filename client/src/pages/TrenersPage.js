@@ -120,8 +120,7 @@ export const TrenersPage = () => {
             </Paper>
             <div className={classes.mainContent}>
                 <Container maxWidth="md">
-                    <Typography variant="h2" align='center' color="textPrimary" gutterBottom> FitZone
-                        right </Typography>
+                    <Typography variant="h2" align='center' color="textPrimary" gutterBottom> FitZone</Typography>
                     <Typography variant="h5" align='center' color="textSecondary" paragraph> Начни сегодня. Начни с
                         себя </Typography>
                     <div className={classes.mainButtons}>
@@ -132,9 +131,6 @@ export const TrenersPage = () => {
                                 </Button>
                             </Grid>
                             <Grid item>
-                                <Button variant="outlined" color='primary'>
-                                    Learn More
-                                </Button>
                             </Grid>
                         </Grid>
                     </div>

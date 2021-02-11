@@ -24,6 +24,7 @@ import {
     KeyboardTimePicker,
     KeyboardDatePicker,
 } from '@material-ui/pickers';
+import {AuthContext} from "../context/AuthContext";
 
 const useStyles = makeStyles((theme)=>({
     root: {
@@ -86,19 +87,23 @@ const useStyles = makeStyles((theme)=>({
 }))
 
 
-export const NoutingPersonalTrenPage = () =>{
+export const NoutingPersonalTrenPage = (props) =>{
     const {loading, error, request, clearError} = useHttp();
-
-    const [expanded, setExpanded] = React.useState(false);
-    const [noutingForm, setNoutingForm] = useState([])
-    const [selectedDate, handleDateChange] = useState(new Date());
+    const {token} = useContext(AuthContext)
+    const curId = props.userId
+    const [noutingForm, setNoutingForm] = useState([{
+        idzanytie:'',nazvanie:'', fio_trener:'',idtrener:'', img:'',datatime:''
+    }])
+    const [selectedDate, setSelectedDate] = useState(new Date());
     const [open, setOpen] = React.useState(false);
-    const [selectedValue, setSelectedValue] = React.useState([]);
-
-    const handleClickOpen = async () => {
+const handleDateChange=(date)=>{
+    console.log(date);
+    setSelectedDate(date);
+}
+    const handleClickOpen = async (card) => {
         //setOpen(true);
         try {
-            const fetched = await request('/api/noutingpt/inserting', 'POST', null)
+            const fetched = await request(`/api/nouting/inserting/${curId}`, 'POST',{...card,selectedDate},{Authorization: `Bearer ${token}`})
             console.log("",fetched)
 
         } catch (e) {
@@ -106,22 +111,12 @@ export const NoutingPersonalTrenPage = () =>{
         }
     };
 
-    const handleClose = (value) => {
-        setOpen(false);
-        setSelectedValue(value);
-    };
-
-
-    const handleExpandClick = (index) => {
-        setExpanded({ [index]: false })
-    };
-
 
     const nouting = useCallback(async () => {
         console.log("Before try")
         try {
-            const fetched = await request('/api/nouting/noutingpt', 'GET', null, {
-
+            const fetched = await request(`/api/nouting/noutingpt/${curId}`, 'GET', null, {
+                Authorization: `Bearer ${token}`
             })
             console.log("Fetched",fetched)
             setNoutingForm(fetched.result)
@@ -136,37 +131,7 @@ export const NoutingPersonalTrenPage = () =>{
         nouting()
     }, [])
     const classes = useStyles();
-    function SimpleDialog(props) {
-        const classes = useStyles();
-        const { onClose, selectedValue, open } = props;
-
-        const handleClose = () => {
-            onClose(selectedValue);
-        };
-
-        const handleListItemClick = (value) => {
-            onClose(value);
-        };
-
-        return (
-            <Dialog onClose={handleClose} aria-labelledby="simple-dialog-title" open={open}>
-                <DialogTitle id="simple-dialog-title">Запись на персональную тренировку</DialogTitle>
-                <List>
-                    {noutingForm.map((form) => (
-                        <ListItem button onClick={() => handleListItemClick(form.nazvanie)} key={form.idzanytie}>
-                            <ListItemText primary={form.fio_trener} />
-                        </ListItem>
-                    ))}
-                </List>
-            </Dialog>
-        );
-    }
-
-    SimpleDialog.propTypes = {
-        onClose: PropTypes.func.isRequired,
-        open: PropTypes.bool.isRequired,
-        selectedValue: PropTypes.string.isRequired,
-    };
+    console.log("SelectedDate", selectedDate)
     return(
         <>
         <main>
@@ -233,13 +198,36 @@ export const NoutingPersonalTrenPage = () =>{
                                         <Typography>
                                             {card.fio_trener}
                                         </Typography>
-
+                                        <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                                            <KeyboardDatePicker
+                                                locale="ru"
+                                                margin="normal"
+                                                id="date-picker-dialog"
+                                                label="Дата"
+                                                views={['year', 'month', 'date']}
+                                                value={selectedDate}
+                                                format="dd/MM/yyyy"
+                                                onChange={handleDateChange}
+                                                KeyboardButtonProps={{
+                                                    'aria-label': 'change date',
+                                                }}
+                                            /><KeyboardTimePicker
+                                            margin="normal"
+                                            id="time-picker"
+                                            label="Время"
+                                            value={selectedDate}
+                                            format="HH:MM"
+                                            onChange={handleDateChange}
+                                            KeyboardButtonProps={{
+                                                'aria-label': 'change time',
+                                            }}
+                                        />
+                                        </MuiPickersUtilsProvider>
                                     </CardContent>
                                     <CardActions>
-                                        <Button onClick={handleClickOpen} size="small" color="primary">
+                                        <Button onClick={()=>handleClickOpen(card,selectedDate)} size="small" color="primary">
                                             ЗАПИСЬ {card.nazvanie}
                                         </Button>
-                                        <SimpleDialog selectedValue={selectedValue} open={open} onClose={handleClose} />
                                         <Button size="small" color="primary">
                                             УЗНАТЬ БОЛЬШЕ
                                         </Button>

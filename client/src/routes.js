@@ -27,7 +27,11 @@ export const useRoutes = isAuthenticated =>{
                     <ZanytiyPage />
                 </Route>
                 <Route path="/noutingpt" exact>
-                    <NoutingPersonalTrenPage />
+                    <AuthContext.Consumer>
+                        {value =>
+                            <NoutingPersonalTrenPage userId={value.userId}/>
+                        }
+                        </AuthContext.Consumer>
                 </Route>
 
             </Switch>
@@ -38,6 +42,9 @@ export const useRoutes = isAuthenticated =>{
             <Switch>
                 <Route path="/" exact>
                     <AuthPage />
+                </Route>
+                <Route path="/fitzone" exact>
+                    <NotAufPage />
                 </Route>
 
 

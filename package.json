@@ -4,7 +4,7 @@
   "description": "full stack fitSait",
   "scripts": {
     "start": "node app.js",
-    "server": "nodemon app.js",
+    "server": "cd server && nodemon app.js",
     "client": "cd client && npm run start",
     "dev": "concurrently \"npm run server\" \"npm run client\""
   },
@@ -12,5 +12,9 @@
     "fittest"
   ],
   "author": "Alina Scheglevatykh <alinka030499@mail.ru>",
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "concurrently": "^5.3.0",
+    "nodemon": "^2.0.7"
+  }
 }
