@@ -6,7 +6,7 @@ import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
-import Link from '@material-ui/core/Link';
+import {Link} from "react-router-dom";
 import Box from '@material-ui/core/Box';
 
 
@@ -126,6 +126,7 @@ export const AuthPage = ({email,password,}) => {
                             className={classes.submit}
                             disabled={loading}
                             onClick={loginHandler}
+                            component={Link} to="/trenersPage"
                         >
                             Войти
                         </Button>

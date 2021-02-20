@@ -1,4 +1,4 @@
-import React, {useEffect, useState, useCallback} from 'react';
+import React, {useEffect, useState, useCallback,Component} from 'react';
 import {
     AppBar,
     Box,
@@ -12,6 +12,7 @@ import {
     Toolbar,
     Typography
 } from "@material-ui/core";
+import ChatBot from 'react-simple-chatbot';
 import Button from "@material-ui/core/Button";
 import {makeStyles, useTheme} from "@material-ui/core/styles";
 import {Link} from "react-router-dom";
@@ -19,12 +20,16 @@ import {useHttp} from "../hooks/http.hook";
 import moment from 'moment'
 import KeyboardArrowLeft from '@material-ui/icons/KeyboardArrowLeft';
 import KeyboardArrowRight from '@material-ui/icons/KeyboardArrowRight';
-import SwipeableViews from 'react-swipeable-views';
-import {autoPlay} from 'react-swipeable-views-utils';
+import AccessTimeIcon from '@material-ui/icons/AccessTime';
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogContentText from '@material-ui/core/DialogContentText';
+import DialogTitle from '@material-ui/core/DialogTitle';
 import MobileStepper from '@material-ui/core/MobileStepper';
 import {Loader} from "../components/Loader";
+import Slide from '@material-ui/core/Slide';
 
-const AutoPlaySwipeableViews = autoPlay(SwipeableViews);
 
 
 moment.lang('ru');
@@ -40,6 +45,9 @@ const useStyles = makeStyles((theme) => ({
     },
     title: {
         flexGrow: 1
+    },
+    text: {
+        left: 10000000,
     },
 
     mainFeaturesPost: {
@@ -91,7 +99,7 @@ const useStyles = makeStyles((theme) => ({
         alignItems: 'center',
         height: 50,
         paddingLeft: theme.spacing(4),
-        backgroundColor: theme.palette.background.default,
+        backgroundColor: theme.palette.background.paper,
     },
     img: {
         height: 255,
@@ -100,35 +108,65 @@ const useStyles = makeStyles((theme) => ({
         overflow: 'hidden',
         width: '100%',
     },
+    closeButton: {
+        position: 'absolute',
+        right: theme.spacing(1),
+        top: theme.spacing(1),
+        color: theme.palette.grey[500],
+    },
+    buttonPadding:{
+        margin: "20px",
+    },
 
 
 }))
-let zanytie = []
+const Transition = React.forwardRef(function Transition(props, ref) {
+    return <Slide direction="up" ref={ref} {...props} />;
+});
 export const NotAufPage = () => {
     const {loading, request} = useHttp();
-    const [infoForm, setInfoForm] = useState([])
+    const [infoFormZan, setInfoFormZan] = useState([])
+    const [infoFormTrener, setInfoFormTrener] = useState([])
+    const [open, setOpen] = React.useState(false);
+
+    const handleClickOpen = () => {
+        setOpen(true);
+    };
+
+    const handleClose = () => {
+        setOpen(false);
+    };
     const [activeStep, setActiveStep] = React.useState(0);
-    const maxSteps = infoForm.length;
+    const maxSteps = infoFormZan.length;
     const classes = useStyles();
     const theme = useTheme();
+    const sleep = (milliseconds) => {
+        return new Promise(resolve => setTimeout(resolve, milliseconds))
+    }
+    const steps = [
+        {
+            id: '0',
+            message: 'Welcome to react chatbot!',
+            trigger: '1',
+        },
+        {
+            id: '1',
+            message: 'Bye!',
+            end: true,
+        },
+    ];
     const info = useCallback(async () => {
-        console.log("Before try")
         try {
-            console.log("try")
             const fetched = await request('/api/notauf/fitzone', 'GET', null, {})
-            console.log("loading2", loading)
-            for (let i = 0; i < fetched.result.length; i++) {
-                zanytie[i] = {
-                    idzanytie: fetched.result[i].idzanytie,
-                    datetime: fetched.result[i].datetime,
-                    numberzal: fetched.result[i].numberzal,
-                    nazvanie: fetched.result[i].nazvanie,
-                    img: fetched.result[i].img,
-                    opisanie: fetched.result[i].opisanie
-                }
-            }
-            console.log("zanytie", zanytie)
-            setInfoForm(fetched.result)
+            setInfoFormZan(fetched.result)
+
+        } catch (e) {
+        }
+    }, [request])
+    const infoTrener = useCallback(async () => {
+        try {
+            const fetched = await request('/api/notauf/fitzonetreners', 'GET', null, {})
+            setInfoFormTrener(fetched.result)
 
         } catch (e) {
         }
@@ -137,11 +175,11 @@ export const NotAufPage = () => {
     useEffect(() => {
         info()
     }, [])
+    useEffect(() => {
+        infoTrener()
+    }, [])
 
-    console.log("infoForm", infoForm)
-    console.log("zanytie", zanytie)
-    console.log("loading", loading)
-    console.log("infoFormLength", infoForm.length)
+
 
     const handleNext = () => {
         setActiveStep((prevActiveStep) => prevActiveStep + 1);
@@ -151,13 +189,6 @@ export const NotAufPage = () => {
         setActiveStep((prevActiveStep) => prevActiveStep - 1);
     };
 
-    const handleStepChange = (step) => {
-        setActiveStep(step);
-    };
-
-    if (loading) {
-        return <Loader/>
-    }
     return (
         <>
             <main>
@@ -219,18 +250,49 @@ export const NotAufPage = () => {
                         </div>
                     </Container>
                 </div>
+
                 <Container className={classes.cardGrid} maxWidth="md">
+
                     <Grid container spacing={4}>
-                        <div className={classes.root}>
-                            {!loading && infoForm.length!=0 && (
+                        <div className={classes.root} align="center">
+                            {loading && <Loader/>}
+                            {!loading && infoFormZan.length!=0 && (
                                 <>
-                                    <Paper square elevation={0} className={classes.header}>
-                                        <Typography>{infoForm[activeStep].label}</Typography>
-                                    </Paper>
+                                <div className={classes.root} align="center">
+                                        <Typography variant="h4">{infoFormZan[activeStep].nazvanie}</Typography>
+
+                                    <Button className={classes.buttonPadding} variant="outlined" color="primary" onClick={handleClickOpen}>
+                                        Узнать больше
+                                    </Button>
+                                    <Dialog
+                                        open={open}
+                                        TransitionComponent={Transition}
+                                        keepMounted
+                                        onClose={handleClose}
+                                        aria-labelledby="alert-dialog-slide-title"
+                                        aria-describedby="alert-dialog-slide-description"
+                                    >
+                                        <DialogTitle id="alert-dialog-slide-title">{infoFormZan[activeStep].nazvanie}</DialogTitle>
+                                        <DialogContent>
+                                            <DialogContentText id="alert-dialog-slide-description">
+                                                {infoFormZan[activeStep].opisanie}
+
+                                            </DialogContentText>
+                                            <DialogContentText id="alert-dialog-slide-description">
+                                            <AccessTimeIcon/>{moment(infoFormZan[activeStep].datetime).format("dddd HH:MM")}
+                                                </DialogContentText>
+                                        </DialogContent>
+                                        <DialogActions>
+                                            <Button onClick={handleClose} color="primary">
+                                                ОК
+                                            </Button>
+                                        </DialogActions>
+                                    </Dialog>
+                                </div>
                                     <img
                                         className={classes.img}
-                                        src={infoForm[activeStep].imgPath}
-                                        alt={infoForm[activeStep].label}
+                                        src={infoFormZan[activeStep].img}
+                                        alt={infoFormZan[activeStep].idtrenera}
                                     />
                                     <MobileStepper
                                         steps={maxSteps}
@@ -253,12 +315,51 @@ export const NotAufPage = () => {
                                             </Button>
                                         }
                                     />
-                                </>
+                                    </>
                             )}
+
                         </div>
                     </Grid>
                 </Container>
+                <Container className={classes.cardGrid} maxWidth="md">
+                    <Grid container spacing={4}>
+                        {
+                            infoFormTrener.map((card) => (
+
+                                <Grid item key={card} xs={12} sm={6} md={4}>
+                                    <Card className={classes.card}>
+                                        <CardMedia className={classes.cardMedia}
+                                                   image={card.img}
+                                                   title="Image title"/>
+                                        <CardContent className={classes.cardContent}>
+                                            <Typography variant="h5" gutterBottom>
+                                                {card.fio_trener}
+                                            </Typography>
+                                            <Typography> Стаж работы:
+                                                {card.stag}
+                                            </Typography>
+                                            <Typography> Контактные данные:
+                                                {card.phone}
+                                            </Typography>
+                                        </CardContent>
+                                        <CardActions>
+                                            <Button size="small" color="primary">
+                                                View
+                                            </Button>
+                                            <Button size="small" color="primary">
+                                                Edit
+                                            </Button>
+                                        </CardActions>
+                                    </Card>
+                                </Grid>
+                            ))
+                        }
+                    </Grid>
+                </Container>
             </main>
+            <div align ="right">
+            <ChatBot steps={steps} />
+            </div>
         </>
     );
 

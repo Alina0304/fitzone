@@ -1,17 +1,15 @@
-import  React from 'react'
+import React, {useContext} from 'react'
+import {Link as linkMaterial, AppBar,Container, Toolbar,IconButton,Box,Typography}from '@material-ui/core';
+import Button from '@material-ui/core/Button';
+import {Link, useHistory} from 'react-router-dom'
+import {AuthContext} from "../context/AuthContext";
 import {makeStyles} from '@material-ui/core/styles';
-import 'materialize-css'
-import {useRoutes} from "./routes";
-import {BrowserRouter as Router} from 'react-router-dom'
-import {useAuth} from "./hooks/auth.hook";
-import {AuthContext} from "./context/AuthContext";
-import {Navbar} from "./components/Navbar";
-import {Loader} from "./components/Loader";
-import {Footer} from "./components/Footer";
+import Avatar from "@material-ui/core/Avatar";
+import ListItem from "@material-ui/core/ListItem";
+import BottomNavigation from "@material-ui/core/BottomNavigation";
 
 
 const useStyles = makeStyles((theme)=>({
-
     root: {
         flexGrow: 1
     },
@@ -62,27 +60,17 @@ const useStyles = makeStyles((theme)=>({
 
 }))
 
-function App() {
-    const {token, login, logout, userId,ready}=useAuth()
-    console.log(token)
-    let isAuthenticated = !!token
-    console.log(isAuthenticated)
-    const routes = useRoutes(isAuthenticated)
-    if(!ready)
-    {
-        return <Loader />
-    }
-return(
-    <AuthContext.Provider value={{token, logout, login, userId, isAuthenticated}}>
-    <Router>
-        {isAuthenticated && <Navbar/>}
-        <div className='container'>
-            {routes}
-        </div>
-        <Footer/>
-    </Router>
-    </AuthContext.Provider>
+export const Footer = () =>{
+    const history=useHistory()
+    const auth=useContext(AuthContext)
+    const classes = useStyles();
+    return (
+       <footer>
+           <Typography variant="h6" align="center" gutterBottom> Footer</Typography>
+           <BottomNavigation
+               className={classes.root}>
+           </BottomNavigation>
+       </footer>
 
-)
+    )
 }
-export default App

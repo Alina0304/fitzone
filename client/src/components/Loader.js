@@ -1,23 +1,48 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import CircularProgress from '@material-ui/core/CircularProgress';
+import LinearProgress from '@material-ui/core/LinearProgress';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles((theme)=>({
     root: {
-        display: 'flex',
-        '& > * + *': {
-            marginLeft: theme.spacing(2),
-        },
+        width: '100%',
+        position:"fixed",
+        bottom:"30%",
     },
 }));
 
-export const Loader = () => {
+export const Loader= () =>{
     const classes = useStyles();
+    const [progress, setProgress] = React.useState(0);
+    const [buffer, setBuffer] = React.useState(10);
+
+    const progressRef = React.useRef(() => {});
+    React.useEffect(() => {
+        progressRef.current = () => {
+            if (progress > 100) {
+                setProgress(0);
+                setBuffer(10);
+            } else {
+                const diff = Math.random() * 10;
+                const diff2 = Math.random() * 10;
+                setProgress(progress + diff);
+                setBuffer(progress + diff + diff2);
+            }
+        };
+    });
+
+    React.useEffect(() => {
+        const timer = setInterval(() => {
+            progressRef.current();
+        }, 500);
+
+        return () => {
+            clearInterval(timer);
+        };
+    }, []);
 
     return (
         <div className={classes.root}>
-            <CircularProgress/>
-            <CircularProgress color="secondary"/>
+            <LinearProgress variant="buffer" value={progress} valueBuffer={buffer} />
         </div>
     );
 }

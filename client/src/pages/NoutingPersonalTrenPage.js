@@ -2,21 +2,7 @@ import React, {useContext, useEffect, useState,useCallback} from 'react';
 import {makeStyles} from "@material-ui/core/styles";
 import {Card, CardActions, CardContent, CardMedia, Container, Grid, Paper, Typography} from "@material-ui/core";
 import Button from "@material-ui/core/Button";
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import TextField from '@material-ui/core/TextField';
 import {useHttp} from "../hooks/http.hook";
-import {Link} from "react-router-dom";
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemAvatar from '@material-ui/core/ListItemAvatar';
-import ListItemText from '@material-ui/core/ListItemText';
-import PersonIcon from '@material-ui/icons/Person';
-import AddIcon from '@material-ui/icons/Add';
-import PropTypes from 'prop-types';
 import 'date-fns'
 import DateFnsUtils from '@date-io/date-fns';
 import {
@@ -25,6 +11,14 @@ import {
     KeyboardDatePicker,
 } from '@material-ui/pickers';
 import {AuthContext} from "../context/AuthContext";
+import DialogTitle from "@material-ui/core/DialogTitle";
+import DialogContent from "@material-ui/core/DialogContent";
+import DialogContentText from "@material-ui/core/DialogContentText";
+import AccessTimeIcon from "@material-ui/icons/AccessTime";
+import moment from "moment";
+import DialogActions from "@material-ui/core/DialogActions";
+import Dialog from "@material-ui/core/Dialog";
+import Slide from "@material-ui/core/Slide";
 
 const useStyles = makeStyles((theme)=>({
     root: {
@@ -86,7 +80,9 @@ const useStyles = makeStyles((theme)=>({
 
 }))
 
-
+const Transition = React.forwardRef(function Transition(props, ref) {
+    return <Slide direction="up" ref={ref} {...props} />;
+});
 export const NoutingPersonalTrenPage = (props) =>{
     const {loading, error, request, clearError} = useHttp();
     const {token} = useContext(AuthContext)
@@ -95,7 +91,11 @@ export const NoutingPersonalTrenPage = (props) =>{
         idzanytie:'',nazvanie:'', fio_trener:'',idtrener:'', img:'',datatime:''
     }])
     const [selectedDate, setSelectedDate] = useState(new Date());
-    const [open, setOpen] = React.useState(false);
+    const [open, setOpen] = React.useState({
+        open:false,
+        stationNumber:null,
+        stationData: []
+    });
 const handleDateChange=(date)=>{
     console.log(date);
     setSelectedDate(date);
@@ -111,6 +111,13 @@ const handleDateChange=(date)=>{
         }
     };
 
+    const handleClickOpenModal = stationNumber=>() => {
+        setOpen({open: true, stationNumber: stationNumber});
+    };
+
+    const handleCloseModal = () => {
+        setOpen({open:false});
+    };
 
     const nouting = useCallback(async () => {
         console.log("Before try")
@@ -225,9 +232,36 @@ const handleDateChange=(date)=>{
                                         </MuiPickersUtilsProvider>
                                     </CardContent>
                                     <CardActions>
-                                        <Button onClick={()=>handleClickOpen(card,selectedDate)} size="small" color="primary">
+                                        <Button onClick={handleClickOpenModal(0)} size="small" color="primary">
                                             ЗАПИСЬ {card.nazvanie}
                                         </Button>
+                                        <Dialog
+                                            open={open}
+                                            TransitionComponent={Transition}
+                                            keepMounted
+                                            onClose={handleCloseModal}
+                                            aria-labelledby="alert-dialog-slide-title"
+                                            aria-describedby="alert-dialog-slide-description"
+                                        >
+                                            <DialogTitle id="alert-dialog-slide-title">fvddvdvf</DialogTitle>
+                                            <DialogContent>
+                                                <DialogContentText id="alert-dialog-slide-description">
+                                                    {card.opisanie}
+
+                                                </DialogContentText>
+                                                <DialogContentText id="alert-dialog-slide-description">
+                                                    <AccessTimeIcon/>{moment(card.datetime).format("dddd HH:MM")}
+                                                </DialogContentText>
+                                            </DialogContent>
+                                            <DialogActions>
+                                                <Button onClick={()=>handleClickOpen(card,selectedDate)} color="primary">
+                                                    Запись
+                                                </Button>
+                                                <Button onClick={handleCloseModal} color="primary">
+                                                    ОК
+                                                </Button>
+                                            </DialogActions>
+                                        </Dialog>
                                         <Button size="small" color="primary">
                                             УЗНАТЬ БОЛЬШЕ
                                         </Button>

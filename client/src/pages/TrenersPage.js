@@ -1,8 +1,5 @@
 import React, {useContext, useEffect, useState,useCallback} from 'react';
 import {AppBar,Container, Toolbar, IconButton, Typography,Box,Paper,Grid,Card,CardMedia,CardContent, CardActions} from "@material-ui/core";
-import CssBaseline from "@material-ui/core/CssBaseline";
-import Avatar from "@material-ui/core/Avatar";
-import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
 import {useHttp} from "../hooks/http.hook";
 import { makeStyles } from '@material-ui/core/styles';
