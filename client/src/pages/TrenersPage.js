@@ -58,8 +58,9 @@ const useStyles = makeStyles((theme)=>({
 }))
 
 
-export const TrenersPage = () => {
+export const TrenersPage = (props) => {
     const {request} = useHttp();
+    const curRole=props.role
     const [trenerForm, setTrenerForm] = useState([{
         id:'', fio:'',stag:'', phone:'', img:''}
     ])
@@ -156,11 +157,15 @@ export const TrenersPage = () => {
                                     </CardContent>
                                     <CardActions>
                                         <Button size="small" color="primary">
-                                            View
+                                            Подробно
                                         </Button>
+                                        {curRole=='admin' && (
+                                            <>
                                         <Button size="small" color="primary">
-                                            Edit
+                                            Редактировать
                                         </Button>
+                                            </>
+                                        )}
                                     </CardActions>
                                 </Card>
                             </Grid>

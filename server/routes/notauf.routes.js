@@ -1,14 +1,8 @@
 const {Router} = require('express');
 const mysql=require('mysql');
-
 const router=Router()
-const db=mysql.createConnection({
-    host: 'localhost',
-    user: 'root',
-    password: 'system',
-    database: 'fit',
-});
-db.connect();
+const db = require('../config/db.conn')
+
 // /api/notauf/fitzone
 router.get(
     '/fitzone',

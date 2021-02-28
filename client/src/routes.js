@@ -16,15 +16,25 @@ export const useRoutes = isAuthenticated =>{
                 <Route path="/clientPage" exact>
                     <AuthContext.Consumer>
                         {value =>
-                            <ClientPage userId={value.userId}/>
+
+                            <ClientPage userId={value.userId} role={value.role}/>
                         }
                     </AuthContext.Consumer>
                 </Route>
+
                 <Route path="/trenersPage" exact>
-                    <TrenersPage />
-                </Route>
+                    <AuthContext.Consumer>
+                        {value =>
+                            <TrenersPage role={value.role}/>
+                        }
+                    </AuthContext.Consumer>
+                    </Route>
                 <Route path="/zanytiyPage" exact>
-                    <ZanytiyPage />
+                    <AuthContext.Consumer>
+                        {value =>
+                            <ZanytiyPage role={value.role}/>
+                        }
+                        </AuthContext.Consumer>
                 </Route>
                 <Route path="/noutingpt" exact>
                     <AuthContext.Consumer>
@@ -40,13 +50,15 @@ export const useRoutes = isAuthenticated =>{
     else {
         return (
             <Switch>
-                <Route path="/" exact>
+                <Route path="/login" exact>
                     <AuthPage />
                 </Route>
                 <Route path="/fitzone" exact>
                     <NotAufPage />
                 </Route>
-
+                <Route path="/" exact>
+                    <NotAufPage />
+                </Route>
 
             </Switch>
         )

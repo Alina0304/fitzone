@@ -5,16 +5,11 @@ const config =require("../config/default.json")
 const bcrypt = require('bcryptjs');
 const jwt = require ('jsonwebtoken')
 const mysql=require('mysql');
+const db=require('../config/db.conn')
 
 const {check, validationResult} = require('express-validator')
 const router=Router()
-const db=mysql.createConnection({
-    host: 'localhost',
-    user: 'root',
-    password: 'system',
-    database: 'fit',
-});
-db.connect();
+
 // /api/auth/register
 router.post(
     '/register',
@@ -79,7 +74,7 @@ router.post('/login',
            const email=req.body.email;
            const password=req.body.password;
 
-            const authSelect='SELECT idauth,email, pass FROM fit.auth WHERE email=?'
+            const authSelect='SELECT idauth,email, pass, role FROM fit.auth WHERE email=?'
             db.query(authSelect, [email],(err, result)=>{
                 console.log("EMAIL",email);
                 console.log("PAss",password);
@@ -93,13 +88,13 @@ router.post('/login',
                     return res.status(400).json({message: "Неверный пароль, попробуйте снова"})
                 }
                 const token = jwt.sign(
-                    {userId: result[0].idauth},
+                    {userId: result[0].idauth, role: result[0].role},
                     "Alina secret str",
                     {expiresIn: '1h'}
 
                 )
                 console.log("token", token)
-                res.json({token, userId: result[0].idauth});
+                res.json({token, userId: result[0].idauth, role: result[0].role});
 
             });
 

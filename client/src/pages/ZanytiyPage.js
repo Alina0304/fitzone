@@ -1,8 +1,22 @@
 import React, {useContext, useEffect, useState,useCallback} from 'react';
 import {makeStyles} from "@material-ui/core/styles";
-import {Card, CardActions, CardContent, CardMedia, Container, Grid, Paper, Typography} from "@material-ui/core";
+import {Card, CardActions, CardContent, CardMedia, Container, Grid, Paper, Typography, Box} from "@material-ui/core";
 import Button from "@material-ui/core/Button";
 import {useHttp} from "../hooks/http.hook";
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogContentText from '@material-ui/core/DialogContentText';
+import DialogTitle from '@material-ui/core/DialogTitle';
+import TextField from '@material-ui/core/TextField';
+import MenuItem from '@material-ui/core/MenuItem';
+import {Loader} from "../components/Loader";
+import NativeSelect from "@material-ui/core/NativeSelect";
+import FormHelperText from "@material-ui/core/FormHelperText";
+import FormControl from "@material-ui/core/FormControl";
+import DateFnsUtils from "@date-io/date-fns";
+import {KeyboardDatePicker, KeyboardTimePicker, MuiPickersUtilsProvider} from "@material-ui/pickers";
+import TextareaAutosize from "@material-ui/core/TextareaAutosize";
 
 
 const useStyles = makeStyles((theme)=>({
@@ -51,15 +65,54 @@ cardContent: {
 },
 cardGrid: {
     marginTop: theme.spacing(4)
-}
+},
+    formControl: {
+        margin: theme.spacing(1),
+        minWidth: 100,
+    },
 
 
 }))
 
-export const ZanytiyPage = () =>{
+export const ZanytiyPage = (props) =>{
     const {loading, error, request, clearError} = useHttp();
     const [zanytieForm, setZanytieForm] = useState([])
+    const curRole=props.role
+    const [selectedDate, setSelectedDate] = useState(new Date());
+    const [state, setState] = useState({open: false, stationNumber: 1,});
+    const [currency, setCurrency] = useState('');
+    const [field, setField]=useState()
 
+    const handleChange = (event) => {
+        setCurrency(event.target.value);
+    };
+
+    const handleChangeField = (event) => {
+        console.log("value", event.target.value)
+        setField(event.target.value);
+    };
+    const handleOpen = stationNumber =>()=> {
+        console.log("stationNumber",stationNumber )
+        setState({openModal:true,stationNumber: stationNumber});
+    };
+
+    const handleClose = () => {
+        setState({openModal:false,stationNumber: 1});
+    };
+    const handleDateChange=(date)=>{
+        console.log(date);
+        setSelectedDate(date);
+    }
+    const handleClickOpen = async (field,selectedDate) => {
+        //setOpen(true);
+        try {
+            const fetched = await request(`/api/zanytiy/zanytiyPage`, 'POST',{field,selectedDate})
+            console.log("",fetched)
+
+        } catch (e) {
+            console.log(e)
+        }
+    };
     const zanytie = useCallback(async () => {
         console.log("Before try")
         try {
@@ -137,6 +190,9 @@ export const ZanytiyPage = () =>{
                 </Container>
             </div>
             <Container className={classes.cardGrid} maxWidth="md">
+                {loading && <Loader/>}
+                {!loading && zanytieForm.length != 0 && (
+                    <>
                 <Grid container spacing={4}>
                     {
                         zanytieForm.map((card) => (
@@ -159,17 +215,131 @@ export const ZanytiyPage = () =>{
                                     </CardContent>
                                     <CardActions>
                                         <Button size="small" color="primary">
-                                            View
+                                            Подробно
                                         </Button>
-                                        <Button size="small" color="primary">
-                                            Edit
-                                        </Button>
+                                        {curRole=='admin' && (
+                                            <>
+                                            <Button size="small" color="primary" onClick={handleOpen(card.idzanytie)}>
+                                                Редактировать
+                                            </Button>
+                                                <Dialog open={state.openModal} onClose={handleClose} aria-labelledby="form-dialog-title">
+                                                    <DialogTitle id="form-dialog-title">Редактировать {zanytieForm[(state.stationNumber)-1].nazvanie}</DialogTitle>
+                                                    <DialogContent>
+                                                        <DialogContentText>
+                                                            Редактировать тренировку
+                                                        </DialogContentText>
+                                                        <div>
+                                                            <FormControl className={classes.formControl}>
+                                                        <TextField
+                                                            autoFocus
+                                                            onChange={handleChangeField}
+                                                            value={field}
+                                                            margin="dense"
+                                                            id="name"
+                                                            label="Название тренировки"
+                                                            defaultValue={zanytieForm[(state.stationNumber)-1].nazvanie}
+                                                            fullWidth
+                                                        />
+                                                            </FormControl>
+                                                        <FormControl className={classes.formControl}>
+                                                        <FormHelperText>Тренер</FormHelperText>
+                                                        <NativeSelect
+                                                            defaultValue={zanytieForm[(state.stationNumber)-1].fio_trener}
+                                                            inputProps={{
+                                                                id: 'fio_trener',
+                                                            }}
+                                                        >
+                                                            {zanytieForm.map((option) => (
+                                                                <option value={option.fio_trener} key=
+                                                                    {option.idtrenera}>
+                                                                    {option.fio_trener}
+                                                                </option>
+                                                            ))}
+                                                        </NativeSelect>
+                                                        </FormControl>
+                                                            <FormControl className={classes.formControl}>
+                                                            <TextField
+                                                                autoFocus
+                                                               margin="dense"
+                                                                style={{width: 95}}
+                                                                id="numberzal"
+                                                                label="Номер зала"
+                                                                defaultValue={zanytieForm[(state.stationNumber)-1].numberzal}
+                                                                fullWidth
+                                                            />
+                                                        </FormControl>
+                                                        </div>
+                                                                <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                                                                    <FormControl className={classes.formControl}>
+                                                                    <KeyboardDatePicker
+                                                                        locale="ru"
+                                                                        margin="normal"
+                                                                        id="date-picker-dialog"
+                                                                        label="Дата"
+                                                                        views={['year', 'month', 'date']}
+                                                                        value={selectedDate}
+                                                                        format="dd/MM/yyyy"
+                                                                        onChange={handleDateChange}
+                                                                        KeyboardButtonProps={{
+                                                                            'aria-label': 'change date',
+                                                                        }}
+                                                                    />
+                                                                        </FormControl>
+                                                                    <FormControl className={classes.formControl}>
+                                                                    <KeyboardTimePicker
+                                                                    margin="normal"
+                                                                    id="time-picker"
+                                                                    label="Время"
+                                                                    value={selectedDate}
+                                                                    format="HH:MM"
+                                                                    onChange={handleDateChange}
+                                                                    KeyboardButtonProps={{
+                                                                        'aria-label': 'change time',
+                                                                    }}
+                                                                />
+                                                                    </FormControl>
+                                                                </MuiPickersUtilsProvider>
+                                                </DialogContent>
+                                                    <FormControl className={classes.formControl}>
+                                                    <FormHelperText>Краткое описание</FormHelperText>
+                                                    <TextareaAutosize
+                                                        rowsMax={5}
+
+                                                        aria-label="Описание программы"
+                                                        placeholder="Maximum 4 rows"
+                                                        defaultValue={zanytieForm[(state.stationNumber)-1].opisanie}
+                                                    />
+                                                    </FormControl>
+                                                    <FormControl className={classes.formControl}>
+                                                        <FormHelperText>Подробное описание</FormHelperText>
+                                                        <TextareaAutosize
+                                                            rowsMax={5}
+
+                                                            aria-label="Описание программы"
+                                                            placeholder="Maximum 4 rows"
+                                                            defaultValue={zanytieForm[(state.stationNumber)-1].opisaniepodrobno}
+                                                        />
+                                                    </FormControl>
+                                                    <DialogActions>
+                                                        <Button onClick={handleClose} color="primary">
+                                                            Отменить
+                                                        </Button>
+                                                        <Button onClick={()=>handleClickOpen(field,selectedDate)} color="primary">
+                                                            {console.log('ZanForm',zanytieForm[(state.stationNumber)-1])}
+                                                            Изменить
+                                                        </Button>
+                                                    </DialogActions>
+                                                </Dialog>
+                                            </>
+                                        )}
                                     </CardActions>
                                 </Card>
                             </Grid>
                         ))
                     }
                 </Grid>
+                    </>
+                )}
             </Container>
         </main>
 

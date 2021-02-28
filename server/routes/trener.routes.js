@@ -5,15 +5,9 @@ const config =require("../config/default.json")
 const bcrypt = require('bcryptjs');
 const jwt = require ('jsonwebtoken')
 const mysql=require('mysql');
-
+const db=require('../config/db.conn')
 const router=Router()
-const db=mysql.createConnection({
-    host: 'localhost',
-    user: 'root',
-    password: 'system',
-    database: 'fit',
-});
-db.connect();
+
 // /api/trener/trenersPage
 router.get(
     '/trenersPage',

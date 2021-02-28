@@ -1,22 +1,8 @@
-const auth = require('../middlewear/auth.middlewear')
 const {Router} = require('express');
-const config =require("../config/default.json")
-//хеширование паролей
-const bcrypt = require('bcryptjs');
-const jwt = require ('jsonwebtoken')
-const mysql=require('mysql');
-
-
+const auth = require('../middlewear/auth.middlewear')
+const db = require('../config/db.conn')
 const router=Router()
 
-const db=mysql.createConnection({
-    host: 'localhost',
-    user: 'root',
-    password: 'system',
-    database: 'fit',
-});
-db.connect();
-//db.startDB();
 // /api/client/clientPage
 router.get(
     '/clientPage/:id', auth,

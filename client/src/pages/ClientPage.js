@@ -157,6 +157,7 @@ const formatter = new Intl.DateTimeFormat("ru", {
         const {loading, request} = useHttp();
         const [user, setUser] = useState(null)
         const curId = props.userId
+        const curRole= props.role
         const handleDrawerOpen = () => {
             setOpen(true);
         };
@@ -177,6 +178,8 @@ const formatter = new Intl.DateTimeFormat("ru", {
                     Authorization: `Bearer ${token}`
                 })
                 console.log("Fetched", fetched)
+                console.log("Role",curRole)
+                console.log("props", props)
                 console.log("UserId", fetched.result[0].id)
                 setClientForm(fetched.result)
             } catch (e) {

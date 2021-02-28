@@ -15,10 +15,13 @@ import DialogTitle from "@material-ui/core/DialogTitle";
 import DialogContent from "@material-ui/core/DialogContent";
 import DialogContentText from "@material-ui/core/DialogContentText";
 import AccessTimeIcon from "@material-ui/icons/AccessTime";
+import PersonIcon from '@material-ui/icons/Person';
+import ScheduleIcon from '@material-ui/icons/Schedule';
 import moment from "moment";
 import DialogActions from "@material-ui/core/DialogActions";
 import Dialog from "@material-ui/core/Dialog";
 import Slide from "@material-ui/core/Slide";
+import {Loader} from "../components/Loader";
 
 const useStyles = makeStyles((theme)=>({
     root: {
@@ -91,16 +94,17 @@ export const NoutingPersonalTrenPage = (props) =>{
         idzanytie:'',nazvanie:'', fio_trener:'',idtrener:'', img:'',datatime:''
     }])
     const [selectedDate, setSelectedDate] = useState(new Date());
-    const [open, setOpen] = React.useState({
-        open:false,
-        stationNumber:null,
-        stationData: []
+    const [state, setState] = React.useState({
+        openModal: false,
+        stationNumber: 1,
     });
 const handleDateChange=(date)=>{
     console.log(date);
     setSelectedDate(date);
 }
-    const handleClickOpen = async (card) => {
+
+
+    const handleClickOpen = async (card,selectedDate) => {
         //setOpen(true);
         try {
             const fetched = await request(`/api/nouting/inserting/${curId}`, 'POST',{...card,selectedDate},{Authorization: `Bearer ${token}`})
@@ -109,15 +113,18 @@ const handleDateChange=(date)=>{
         } catch (e) {
             console.log(e)
         }
+        handleCloseModal()
     };
 
-    const handleClickOpenModal = stationNumber=>() => {
-        setOpen({open: true, stationNumber: stationNumber});
+    const handleClickOpenModal = stationNumber =>()=> {
+        console.log("stationNumber",stationNumber )
+        setState({openModal:true,stationNumber: stationNumber});
     };
 
     const handleCloseModal = () => {
-        setOpen({open:false});
+        setState({openModal:false,stationNumber: 1});
     };
+
 
     const nouting = useCallback(async () => {
         console.log("Before try")
@@ -139,6 +146,7 @@ const handleDateChange=(date)=>{
     }, [])
     const classes = useStyles();
     console.log("SelectedDate", selectedDate)
+    console.log("NoutingForm", noutingForm)
     return(
         <>
         <main>
@@ -189,10 +197,12 @@ const handleDateChange=(date)=>{
                 </Container>
             </div>
             <Container className={classes.cardGrid} maxWidth="md">
-                <Grid container spacing={4}>
-                    {
-                        noutingForm.map((card) => (
-
+                {loading && <Loader/>}
+                {!loading && noutingForm.length != 1 && (
+                    <>
+                    <Grid container spacing={4}>
+                        {
+                        noutingForm.map((card,index) => (
                             <Grid item key={card} xs={12} sm={6} md={4} spacing={3}>
                                 <Card id={card.idzanytie} className={classes.card}>
                                     <CardMedia className={classes.cardMedia}
@@ -232,47 +242,68 @@ const handleDateChange=(date)=>{
                                         </MuiPickersUtilsProvider>
                                     </CardContent>
                                     <CardActions>
-                                        <Button onClick={handleClickOpenModal(0)} size="small" color="primary">
-                                            ЗАПИСЬ {card.nazvanie}
+                                        <Button onClick={handleClickOpenModal(card.idzanytie)} size="small" color="primary">
+                                            ЗАПИСЬ {console.log("idzanytie",card.idzanytie)}
                                         </Button>
+
                                         <Dialog
-                                            open={open}
+                                            open={state.openModal}
                                             TransitionComponent={Transition}
                                             keepMounted
                                             onClose={handleCloseModal}
                                             aria-labelledby="alert-dialog-slide-title"
                                             aria-describedby="alert-dialog-slide-description"
                                         >
-                                            <DialogTitle id="alert-dialog-slide-title">fvddvdvf</DialogTitle>
+                                            <DialogTitle id="alert-dialog-slide-title">Подтвердите запись</DialogTitle>
                                             <DialogContent>
                                                 <DialogContentText id="alert-dialog-slide-description">
-                                                    {card.opisanie}
-
+                                                    {noutingForm[(state.stationNumber)-1].nazvanie}
                                                 </DialogContentText>
                                                 <DialogContentText id="alert-dialog-slide-description">
-                                                    <AccessTimeIcon/>{moment(card.datetime).format("dddd HH:MM")}
+                                                    <AccessTimeIcon/>{moment(selectedDate).format("LLLL")}
                                                 </DialogContentText>
                                             </DialogContent>
                                             <DialogActions>
-                                                <Button onClick={()=>handleClickOpen(card,selectedDate)} color="primary">
+                                                <Button onClick={()=>handleClickOpen(noutingForm[(state.stationNumber)-1],selectedDate)} color="primary">
                                                     Запись
                                                 </Button>
                                                 <Button onClick={handleCloseModal} color="primary">
-                                                    ОК
+                                                    Назад
                                                 </Button>
                                             </DialogActions>
                                         </Dialog>
-                                        <Button size="small" color="primary">
+                                        <Button size="small" color="primary"  onClick={handleClickOpenModal(card.idzanytie)}>
                                             УЗНАТЬ БОЛЬШЕ
                                         </Button>
+                                        <Dialog onClose={handleCloseModal} aria-labelledby="customized-dialog-title" open={state.openModal}>
+                                            <DialogTitle id="customized-dialog-title" onClose={handleCloseModal}>
+                                                {noutingForm[(state.stationNumber)-1].nazvanie}
+                                            </DialogTitle>
+                                            <DialogContent dividers>
+                                                <Typography gutterBottom>
+                                                    {noutingForm[(state.stationNumber)-1].opisaniepodrobno}
+                                                </Typography>
+                                                <Typography gutterBottom>
+                                                    <PersonIcon/>
+                                                    Тренер: {noutingForm[(state.stationNumber)-1].fio_trener}
+                                                </Typography>
+                                            </DialogContent>
+                                            <DialogActions>
+                                                <Button autoFocus onClick={handleCloseModal} color="primary">
+                                                    Назад
+                                                </Button>
+                                            </DialogActions>
+                                        </Dialog>
 
                                 </CardActions>
 
                                 </Card>
                             </Grid>
                         ))
-                    }
+                        }
                 </Grid>
+                    </>
+                )}
             </Container>
         </main>
 </>

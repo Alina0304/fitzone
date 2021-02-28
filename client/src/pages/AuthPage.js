@@ -8,15 +8,11 @@ import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import {Link} from "react-router-dom";
 import Box from '@material-ui/core/Box';
-
-
-
 import { makeStyles } from '@material-ui/core/styles';
 import {useHttp} from "../hooks/http.hook";
 import {useMessage} from "../hooks/message.hook";
 import {AuthContext} from "../context/AuthContext";
-import {useRoutes} from "../routes";
-import {useAuth} from "../hooks/auth.hook";
+
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -74,7 +70,7 @@ export const AuthPage = ({email,password,}) => {
         try {
             const data = await request('/api/auth/login', 'POST', {...form})
             console.log("Data", data);
-            auth.login(data.token, data.userId)
+            auth.login(data.token, data.userId, data.role)
 
 
         } catch (e) {

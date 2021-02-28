@@ -1,4 +1,4 @@
-import React, {useEffect, useState, useCallback,Component} from 'react';
+import React, {useEffect, useState, useCallback} from 'react';
 import {
     AppBar,
     Box,
@@ -7,7 +7,7 @@ import {
     CardContent,
     CardMedia,
     Container,
-    Grid, IconButton,
+    Grid,
     Paper,
     Toolbar,
     Typography
@@ -29,7 +29,6 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import MobileStepper from '@material-ui/core/MobileStepper';
 import {Loader} from "../components/Loader";
 import Slide from '@material-ui/core/Slide';
-
 
 
 moment.lang('ru');
@@ -114,7 +113,7 @@ const useStyles = makeStyles((theme) => ({
         top: theme.spacing(1),
         color: theme.palette.grey[500],
     },
-    buttonPadding:{
+    buttonPadding: {
         margin: "20px",
     },
 
@@ -180,7 +179,6 @@ export const NotAufPage = () => {
     }, [])
 
 
-
     const handleNext = () => {
         setActiveStep((prevActiveStep) => prevActiveStep + 1);
     };
@@ -198,7 +196,7 @@ export const NotAufPage = () => {
                             <Typography variant="h6" className={classes.title}> FitZone
                             </Typography>
                             <Box mr={2}>
-                                <Button component={Link} to="/" color="inherit" align="left">
+                                <Button component={Link} to="/login" color="inherit" align="left">
                                     Войти
                                 </Button>
                             </Box>
@@ -256,39 +254,41 @@ export const NotAufPage = () => {
                     <Grid container spacing={4}>
                         <div className={classes.root} align="center">
                             {loading && <Loader/>}
-                            {!loading && infoFormZan.length!=0 && (
+                            {!loading && infoFormZan.length != 0 && (
                                 <>
-                                <div className={classes.root} align="center">
+                                    <div className={classes.root} align="center">
                                         <Typography variant="h4">{infoFormZan[activeStep].nazvanie}</Typography>
 
-                                    <Button className={classes.buttonPadding} variant="outlined" color="primary" onClick={handleClickOpen}>
-                                        Узнать больше
-                                    </Button>
-                                    <Dialog
-                                        open={open}
-                                        TransitionComponent={Transition}
-                                        keepMounted
-                                        onClose={handleClose}
-                                        aria-labelledby="alert-dialog-slide-title"
-                                        aria-describedby="alert-dialog-slide-description"
-                                    >
-                                        <DialogTitle id="alert-dialog-slide-title">{infoFormZan[activeStep].nazvanie}</DialogTitle>
-                                        <DialogContent>
-                                            <DialogContentText id="alert-dialog-slide-description">
-                                                {infoFormZan[activeStep].opisanie}
+                                        <Button className={classes.buttonPadding} variant="outlined" color="primary"
+                                                onClick={handleClickOpen}>
+                                            Узнать больше
+                                        </Button>
+                                        <Dialog
+                                            open={open}
+                                            TransitionComponent={Transition}
+                                            keepMounted
+                                            onClose={handleClose}
+                                            aria-labelledby="alert-dialog-slide-title"
+                                            aria-describedby="alert-dialog-slide-description"
+                                        >
+                                            <DialogTitle
+                                                id="alert-dialog-slide-title">{infoFormZan[activeStep].nazvanie}</DialogTitle>
+                                            <DialogContent>
+                                                <DialogContentText id="alert-dialog-slide-description">
+                                                    {infoFormZan[activeStep].opisanie}
 
-                                            </DialogContentText>
-                                            <DialogContentText id="alert-dialog-slide-description">
-                                            <AccessTimeIcon/>{moment(infoFormZan[activeStep].datetime).format("dddd HH:MM")}
                                                 </DialogContentText>
-                                        </DialogContent>
-                                        <DialogActions>
-                                            <Button onClick={handleClose} color="primary">
-                                                ОК
-                                            </Button>
-                                        </DialogActions>
-                                    </Dialog>
-                                </div>
+                                                <DialogContentText id="alert-dialog-slide-description">
+                                                    <AccessTimeIcon/>{moment(infoFormZan[activeStep].datetime).format("dddd HH:MM")}
+                                                </DialogContentText>
+                                            </DialogContent>
+                                            <DialogActions>
+                                                <Button onClick={handleClose} color="primary">
+                                                    ОК
+                                                </Button>
+                                            </DialogActions>
+                                        </Dialog>
+                                    </div>
                                     <img
                                         className={classes.img}
                                         src={infoFormZan[activeStep].img}
@@ -315,7 +315,7 @@ export const NotAufPage = () => {
                                             </Button>
                                         }
                                     />
-                                    </>
+                                </>
                             )}
 
                         </div>
@@ -344,10 +344,7 @@ export const NotAufPage = () => {
                                         </CardContent>
                                         <CardActions>
                                             <Button size="small" color="primary">
-                                                View
-                                            </Button>
-                                            <Button size="small" color="primary">
-                                                Edit
+                                                Подробнее
                                             </Button>
                                         </CardActions>
                                     </Card>
@@ -357,8 +354,8 @@ export const NotAufPage = () => {
                     </Grid>
                 </Container>
             </main>
-            <div align ="right">
-            <ChatBot steps={steps} />
+            <div align="right">
+                <ChatBot steps={steps}/>
             </div>
         </>
     );

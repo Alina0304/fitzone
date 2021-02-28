@@ -1,7 +1,9 @@
 const express=require('express');
 const app=express();
-const mysql=require('mysql');
 const config=require('config')
+const mysql=require('mysql');
+const db = require('./config/db.conn')
+
 
 
 app.use(express.json({extended: true}))
@@ -13,15 +15,9 @@ app.use('/api/nouting', require('./routes/nouitig.routes'))
 app.use('/api/notauf', require('./routes/notauf.routes'))
 
 const PORT = config.get('port') || 5000;
-const db= mysql.createConnection({
-    host: 'localhost',
-    user: 'root',
-    password: 'system',
-    database: 'fit',
-});
 
-async function  start(){
-    try {
+async function start(){
+   try {
         db.connect();
         console.log('Connect');
         app.listen(PORT, ()=> console.log(`App has been running on port ${PORT}`));

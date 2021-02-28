@@ -1,23 +1,15 @@
 const {Router} = require('express');
-const mysql=require('mysql');
 const router=Router()
 const dateFormat = require('dateformat');
-const {check, validationResult} = require('express-validator')
 const auth = require('../middlewear/auth.middlewear')
+const db = require('../config/db.conn')
 
-const db=mysql.createConnection({
-    host: 'localhost',
-    user: 'root',
-    password: 'system',
-    database: 'fit',
-});
-db.connect();
 // /api/nouting/noutigpt
 router.get(
     '/noutingpt/:id',auth,
     async (req, res) => {
         try{
-            const trenerovki="SELECT zanytie.idzanytie,zanytie.nazvanie, trener.fio_trener,trener.idtrener, zanytie.img FROM fit.zanytie JOIN fit.trener ON fit.zanytie.idtrenera=fit.trener.idtrener;"
+            const trenerovki="SELECT zanytie.idzanytie,zanytie.nazvanie,zanytie.opisanie,zanytie.opisaniepodrobno, trener.fio_trener,trener.idtrener, zanytie.img FROM fit.zanytie JOIN fit.trener ON fit.zanytie.idtrenera=fit.trener.idtrener;"
             db.query(trenerovki, [],(err, result)=>{
                 console.log("Error",err)
                 console.log("Результат выборки",result);
