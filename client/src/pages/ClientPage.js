@@ -25,8 +25,9 @@ import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
 import MenuIcon from '@material-ui/icons/Menu';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
-import NotificationsIcon from '@material-ui/icons/Notifications';
-import {Link} from "react-router-dom";
+import CheckIcon from '@material-ui/icons/Check';
+import CloseIcon from '@material-ui/icons/Close';
+import {Link, useHistory} from "react-router-dom";
 import {AuthContext} from '../context/AuthContext'
 import {useHttp} from "../hooks/http.hook";
 import {Loader} from '../components/Loader'
@@ -38,6 +39,7 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import {Card, CardMedia} from "@material-ui/core";
+import Checkbox from "@material-ui/core/Checkbox";
 
 
     function Copyright() {
@@ -155,26 +157,54 @@ const formatter = new Intl.DateTimeFormat("ru", {
         const classes = useStyles();
         const [open, setOpen] = React.useState(true);
         const {loading, request} = useHttp();
-        const [user, setUser] = useState(null)
         const curId = props.userId
         const curRole= props.role
-        const handleDrawerOpen = () => {
+        const history=useHistory()
+        const auth=useContext(AuthContext)
+        const fixedHeightPaper = clsx(classes.paper, classes.fixedHeight);
+        const [clientForm, setClientForm] = useState([{}])
+        const [adminForm, setAdminForm]=useState([{}])
+        const [trenerForm, setTrenerForm]=useState([{}])
+
+        const logoutHandler=event=> {
+            event.preventDefault()
+            auth.logout()
+            history.push('/fitzone')
+        };
+
+            const handleDrawerOpen = () => {
             setOpen(true);
         };
         const handleDrawerClose = () => {
             setOpen(false);
         };
-        const fixedHeightPaper = clsx(classes.paper, classes.fixedHeight);
 
-        const [clientForm, setClientForm] = useState([{
-            id: '', FIO_cl: '', Age: '', Phone: '', id_abon: '', Activity: '', DateActivity: '', img: '',
-            idpt: '', idclent: '', idtrener: '', datatime: '', fio_trener:''
-        }])
+        const submitTren= async (card,statusNew) => {
+            console.log("Admin[index]", card)
+            try {
+                const fetched = await request(`/api/client/clientPage/admin/updating/${curId}`, 'POST',{...card,statusNew},{Authorization: `Bearer ${token}`})
+                console.log("",fetched)
+
+            } catch (e) {
+                console.log(e)
+            }
+            switch (curRole) {
+                case 'admin':
+                    admin()
+                    break
+                case 'tren':
+                    trener()
+                    break
+                case 'cl':
+                    break
+            }
+        }
+
         const client = useCallback(async () => {
             console.log("Before try")
             try {
                 console.log("CurId", curId)
-                const fetched = await request(`/api/client/clientPage/${curId}`, 'GET', null, {
+                const fetched = await request(`/api/client/clientPage/client/${curId}`, 'GET', null, {
                     Authorization: `Bearer ${token}`
                 })
                 console.log("Fetched", fetched)
@@ -186,26 +216,45 @@ const formatter = new Intl.DateTimeFormat("ru", {
                 console.log(e)
             }
         }, [request, token, curId])
-
+        const admin = useCallback(async () => {
+            console.log("Before try")
+            try {
+                console.log("CurId", curId)
+                const fetched = await request(`/api/client/clientPage/admin/${curId}`, 'GET', null, {Authorization: `Bearer ${token}`})
+               console.log("fetched", fetched.result[0])
+                console.log("UserId", fetched.result[0].id)
+                setAdminForm(fetched.result)
+                console.log("adminForm", adminForm)
+            } catch (e) {
+                console.log(e)
+            }
+        }, [request, token, curId])
+        const trener = useCallback(async () => {
+            console.log("Before try")
+            try {
+                console.log("CurId", curId)
+                const fetched = await request(`/api/client/clientPage/trener/${curId}`, 'GET', null, {Authorization: `Bearer ${token}`})
+                console.log("fetched", fetched.result[0])
+                console.log("UserId", fetched.result[0].id)
+                setTrenerForm(fetched.result)
+                console.log("adminForm", adminForm)
+            } catch (e) {
+                console.log(e)
+            }
+        }, [request, token, curId])
         useEffect(() => {
             client()
+        }, [])
+        useEffect(() => {
+            admin()
+        }, [])
+        useEffect(() => {
+            trener()
         }, [])
         if (loading) {
             return <Loader/>
         }
-
-        console.log("ClientForm", clientForm)
-        for (let i = 0; i <clientForm.length; i++){
-
-            rows[i]={
-                trenName: clientForm[i]['name'],
-                DateTime: clientForm[i]['datatime'],
-                trener: clientForm[i]['fio_trener'],
-            }
-        }
-        console.log("rows", rows)
-
-
+        console.log("Tren", trenerForm)
 
         return (
           <>
@@ -238,11 +287,7 @@ const formatter = new Intl.DateTimeFormat("ru", {
                         <Box mr={2}>
                             <Button component={Link} to="/zanytiyPage" color="inherit" align="left">Групповые тренировки</Button>
                         </Box>
-                        <IconButton color="inherit">
-                            <Badge badgeContent={4} color="secondary">
-                                <NotificationsIcon/>
-                            </Badge>
-                        </IconButton>
+                        <Button component={Link} to="/" color="inherit" align="center" onClick={logoutHandler}>Выйти</Button>
                     </Toolbar>
                 </AppBar>
                 <Drawer
@@ -295,29 +340,107 @@ const formatter = new Intl.DateTimeFormat("ru", {
                 </Grid>
                     {/* Chart */}
                     <Grid item xs={12} md={8} lg={9}>
+                        {loading && <Loader/>}
+                        {!loading && (adminForm.length != 0 || clientForm.length!=0) && (
+                            <>
                         <Paper className={fixedHeightPaper}>
                             <TableContainer component={Paper}>
                                 <Table className={classes.table} size="small" aria-label="a dense table">
-                                    <TableHead>
-                                        <TableRow>
+                                    {curRole=='admin' && (
+                                        <>
+                                        <TableHead>
+                                            <TableRow>
+                                            <TableCell align="center">ФИО клиента</TableCell>
                                             <TableCell align="center">Название</TableCell>
                                             <TableCell align="center">Дата и время</TableCell>
                                             <TableCell align="center">Тренер</TableCell>
+                                            <TableCell align="center">Статус</TableCell>
+                                            <TableCell align="center">Подтвердить</TableCell>
+                                                <TableCell align="center">Отменить</TableCell>
                                         </TableRow>
                                     </TableHead>
                                     <TableBody>
-                                        {rows.map((row) => (
+
+                                        {adminForm.map((row, index) => (
                                             <TableRow key={row.name}>
-                                                <TableCell align="center">{row.trenName}</TableCell>
+
+                                                <TableCell align="center">{row.FIO_cl}</TableCell>
+                                                <TableCell align="center">{row.name}</TableCell>
                                                 <TableCell align="center">
-                                                    {moment(row.DateTime).format('LLLL')}</TableCell>
-                                                <TableCell align="center">{row.trener}</TableCell>
+                                                    {moment(row.datatime).format('LLLL')}</TableCell>
+                                                <TableCell align="center">{row.fio_trener}</TableCell>
+                                                <TableCell align="center">{row.status}</TableCell>
+                                                <TableCell align="center"><CheckIcon onClick={()=>submitTren(adminForm[index],"yes")}/></TableCell>
+                                                <TableCell align="center"><CloseIcon onClick={()=>submitTren(adminForm[index],"no")}/></TableCell>
+
                                             </TableRow>
                                         ))}
-                                    </TableBody>
+                                        </TableBody>
+                                        )}
+                                        </>
+                                        )}
+
+                                        {curRole=='cl' && (
+                                            <>
+                                            <TableHead>
+                                                <TableRow>
+                                                    <TableCell align="center">Название</TableCell>
+                                                    <TableCell align="center">Дата и время</TableCell>
+                                                    <TableCell align="center">Тренер</TableCell>
+                                                    <TableCell align="center">Статус</TableCell>
+                                                </TableRow>
+                                            </TableHead>
+                                            <TableBody>
+                                                {clientForm.map((row) => (
+                                                    <TableRow key={row.name}>
+                                                        <TableCell align="center">{row.name}</TableCell>
+                                                        <TableCell align="center">
+                                                            {moment(row.datatime).format('LLLL')}</TableCell>
+                                                        <TableCell align="center">{row.fio_trener}</TableCell>
+                                                        <TableCell align="center">{row.status}</TableCell>
+                                                    </TableRow>
+                                                ))}
+                                            </TableBody>
+                                                )}
+                                            </>
+                                        )}
+                                    {curRole=='tren' && (
+                                        <>
+                                            <TableHead>
+                                                <TableRow>
+                                                    <TableCell align="center">ФИО клиента</TableCell>
+                                                    <TableCell align="center">Название</TableCell>
+                                                    <TableCell align="center">Дата и время</TableCell>
+                                                    <TableCell align="center">Тренер</TableCell>
+                                                    <TableCell align="center">Статус</TableCell>
+                                                    <TableCell align="center">Подтвердить</TableCell>
+                                                    <TableCell align="center">Отменить</TableCell>
+                                                </TableRow>
+                                            </TableHead>
+                                            <TableBody>
+
+                                                {trenerForm.map((row, index) => (
+                                                    <TableRow key={row.name}>
+
+                                                        <TableCell align="center">{row.FIO_cl}</TableCell>
+                                                        <TableCell align="center">{row.name}</TableCell>
+                                                        <TableCell align="center">
+                                                            {moment(row.datatime).format('LLLL')}</TableCell>
+                                                        <TableCell align="center">{row.fio_trener}</TableCell>
+                                                        <TableCell align="center">{row.status}</TableCell>
+                                                        <TableCell align="center"><CheckIcon onClick={()=>submitTren(trenerForm[index],"yes")}/></TableCell>
+                                                        <TableCell align="center"><CloseIcon onClick={()=>submitTren(trenerForm[index],"no")}/></TableCell>
+
+                                                    </TableRow>
+                                                ))}
+                                            </TableBody>
+                                        </>
+                                    )}
                                 </Table>
                             </TableContainer>
                         </Paper>
+                            </>
+                        )}
                     </Grid>
                 {/* Recent Orders */}
                 <Grid item xs={12}>

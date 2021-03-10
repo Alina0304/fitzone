@@ -81,7 +81,7 @@ export const Navbar = () =>{
                 </Typography>
                 <Box mr={2}>
                     <Button component={Link} to="/clientPage" color="inherit" align="left">
-                        Клиент
+                        Личный кабинет
                     </Button>
                 </Box>
                 <Box mr={2}>

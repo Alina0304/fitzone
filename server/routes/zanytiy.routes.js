@@ -28,7 +28,8 @@ router.get(
 router.post(
     '/zanytiyPage',
     async (req, res)=>{
-        let values=[req.body.field,dateFormat(req.body.selectedDate,"yyyy-mm-dd HH:MM:ss")]
+        let values=[req.body.name,dateFormat(req.body.selectedDate,"yyyy-mm-dd HH:MM:ss"), req.body.number, req.body.trener,
+            req.body.opisanie, req.body.opodrobno]
         console.log("values", values)
         try{
 

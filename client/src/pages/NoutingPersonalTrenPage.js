@@ -105,7 +105,6 @@ const handleDateChange=(date)=>{
 
 
     const handleClickOpen = async (card,selectedDate) => {
-        //setOpen(true);
         try {
             const fetched = await request(`/api/nouting/inserting/${curId}`, 'POST',{...card,selectedDate},{Authorization: `Bearer ${token}`})
             console.log("",fetched)

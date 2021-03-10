@@ -3,6 +3,7 @@ import {AppBar,Container, Toolbar, IconButton, Typography,Box,Paper,Grid,Card,Ca
 import Button from "@material-ui/core/Button";
 import {useHttp} from "../hooks/http.hook";
 import { makeStyles } from '@material-ui/core/styles';
+import {Loader} from "../components/Loader";
 
 
 const useStyles = makeStyles((theme)=>({
@@ -59,7 +60,7 @@ const useStyles = makeStyles((theme)=>({
 
 
 export const TrenersPage = (props) => {
-    const {request} = useHttp();
+    const {request,loading} = useHttp();
     const curRole=props.role
     const [trenerForm, setTrenerForm] = useState([{
         id:'', fio:'',stag:'', phone:'', img:''}
@@ -86,6 +87,7 @@ export const TrenersPage = (props) => {
 
      return (
         <main>
+            {loading && <Loader/>}
             <Paper className={classes.mainFeaturesPost}>
                 <Container fixed>
                     <div className={classes.overlay}/>

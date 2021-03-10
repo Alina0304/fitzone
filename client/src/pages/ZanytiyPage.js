@@ -17,6 +17,8 @@ import FormControl from "@material-ui/core/FormControl";
 import DateFnsUtils from "@date-io/date-fns";
 import {KeyboardDatePicker, KeyboardTimePicker, MuiPickersUtilsProvider} from "@material-ui/pickers";
 import TextareaAutosize from "@material-ui/core/TextareaAutosize";
+import AccessTimeIcon from "@material-ui/icons/AccessTime";
+import moment from "moment";
 
 
 const useStyles = makeStyles((theme)=>({
@@ -80,16 +82,31 @@ export const ZanytiyPage = (props) =>{
     const curRole=props.role
     const [selectedDate, setSelectedDate] = useState(new Date());
     const [state, setState] = useState({open: false, stationNumber: 1,});
-    const [currency, setCurrency] = useState('');
-    const [field, setField]=useState()
+    const [name, setName]=useState()
+    const [number, setNumber]=useState()
+    const [trener, setTrener] = React.useState();
+    const [opisanie, setOpisanie] = React.useState();
+    const [opodrobno, setOpodrobno] = React.useState();
 
-    const handleChange = (event) => {
-        setCurrency(event.target.value);
+    const handleChangeName =(event,name) => {
+        console.log("name", name)
+        console.log("value", event.target.value)
+       setName(name)
+
+    };
+    const handleChangeNumber = (event) => {
+        setNumber(event.target.value);
     };
 
-    const handleChangeField = (event) => {
-        console.log("value", event.target.value)
-        setField(event.target.value);
+    const handleChangeTrener = (event) => {
+        setTrener(event.target.value);
+    };
+    const handleChangeOpisanie = (event) => {
+        setOpisanie(event.target.value);
+    };
+
+    const handleChangeOpodrobno = (event) => {
+        setOpodrobno(event.target.value);
     };
     const handleOpen = stationNumber =>()=> {
         console.log("stationNumber",stationNumber )
@@ -103,10 +120,10 @@ export const ZanytiyPage = (props) =>{
         console.log(date);
         setSelectedDate(date);
     }
-    const handleClickOpen = async (field,selectedDate) => {
+    const handleClickOpen = async (name,number,selectedDate,trener, opisanie, opodrobno) => {
         //setOpen(true);
         try {
-            const fetched = await request(`/api/zanytiy/zanytiyPage`, 'POST',{field,selectedDate})
+            const fetched = await request(`/api/zanytiy/zanytiyPage`, 'POST',{name,number,selectedDate,trener,opisanie,opodrobno})
             console.log("",fetched)
 
         } catch (e) {
@@ -176,11 +193,6 @@ export const ZanytiyPage = (props) =>{
                     <div className={classes.mainButtons}>
                         <Grid container spacing={4} justify="center">
                             <Grid item>
-                                <Button variant="contained" color='primary'>
-                                    Start now
-                                </Button>
-                            </Grid>
-                            <Grid item>
                                 <Button variant="outlined" color='primary'>
                                     Learn More
                                 </Button>
@@ -210,7 +222,7 @@ export const ZanytiyPage = (props) =>{
                                             {card.opisanie}
                                         </Typography>
                                         <Typography>
-                                            {card.datetime}
+                                            <AccessTimeIcon/>{moment(card.datetime).format("LLLL")}
                                         </Typography>
                                     </CardContent>
                                     <CardActions>
@@ -232,8 +244,8 @@ export const ZanytiyPage = (props) =>{
                                                             <FormControl className={classes.formControl}>
                                                         <TextField
                                                             autoFocus
-                                                            onChange={handleChangeField}
-                                                            value={field}
+                                                            onChange={()=>handleChangeName(zanytieForm[(state.stationNumber)-1].nazvanie)}
+                                                            value={name}
                                                             margin="dense"
                                                             id="name"
                                                             label="Название тренировки"
@@ -248,6 +260,7 @@ export const ZanytiyPage = (props) =>{
                                                             inputProps={{
                                                                 id: 'fio_trener',
                                                             }}
+                                                            onChange={handleChangeTrener}
                                                         >
                                                             {zanytieForm.map((option) => (
                                                                 <option value={option.fio_trener} key=
@@ -261,6 +274,8 @@ export const ZanytiyPage = (props) =>{
                                                             <TextField
                                                                 autoFocus
                                                                margin="dense"
+                                                                onChange={handleChangeNumber}
+                                                                value={number}
                                                                 style={{width: 95}}
                                                                 id="numberzal"
                                                                 label="Номер зала"
@@ -304,7 +319,7 @@ export const ZanytiyPage = (props) =>{
                                                     <FormHelperText>Краткое описание</FormHelperText>
                                                     <TextareaAutosize
                                                         rowsMax={5}
-
+                                                        onChange={handleChangeOpisanie}
                                                         aria-label="Описание программы"
                                                         placeholder="Maximum 4 rows"
                                                         defaultValue={zanytieForm[(state.stationNumber)-1].opisanie}
@@ -314,7 +329,7 @@ export const ZanytiyPage = (props) =>{
                                                         <FormHelperText>Подробное описание</FormHelperText>
                                                         <TextareaAutosize
                                                             rowsMax={5}
-
+                                                            onChange={handleChangeOpodrobno}
                                                             aria-label="Описание программы"
                                                             placeholder="Maximum 4 rows"
                                                             defaultValue={zanytieForm[(state.stationNumber)-1].opisaniepodrobno}
@@ -324,7 +339,7 @@ export const ZanytiyPage = (props) =>{
                                                         <Button onClick={handleClose} color="primary">
                                                             Отменить
                                                         </Button>
-                                                        <Button onClick={()=>handleClickOpen(field,selectedDate)} color="primary">
+                                                        <Button onClick={()=>handleClickOpen(name,number,selectedDate, trener, opisanie,opodrobno)} color="primary">
                                                             {console.log('ZanForm',zanytieForm[(state.stationNumber)-1])}
                                                             Изменить
                                                         </Button>

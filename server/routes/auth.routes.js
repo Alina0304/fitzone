@@ -78,7 +78,7 @@ router.post('/login',
             db.query(authSelect, [email],(err, result)=>{
                 console.log("EMAIL",email);
                 console.log("PAss",password);
-                console.log("Результат выборки",result[0].pass);
+                console.log("Результат выборки",result);
                 if(result.length==0){
                     return res.status(400).json({message:'Пользователь не найден'})
                 }
