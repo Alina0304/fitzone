@@ -153,14 +153,13 @@ const formatter = new Intl.DateTimeFormat("ru", {
     }));
 
     export const ClientPage = (props) => {
-        const {token} = useContext(AuthContext)
+        const {token, auth} = useContext(AuthContext)
+        const {loading, request} = useHttp();
         const classes = useStyles();
         const [open, setOpen] = React.useState(true);
-        const {loading, request} = useHttp();
         const curId = props.userId
         const curRole= props.role
         const history=useHistory()
-        const auth=useContext(AuthContext)
         const fixedHeightPaper = clsx(classes.paper, classes.fixedHeight);
         const [clientForm, setClientForm] = useState([{}])
         const [adminForm, setAdminForm]=useState([{}])
@@ -376,10 +375,9 @@ const formatter = new Intl.DateTimeFormat("ru", {
                                             </TableRow>
                                         ))}
                                         </TableBody>
-                                        )}
+
                                         </>
                                         )}
-
                                         {curRole=='cl' && (
                                             <>
                                             <TableHead>

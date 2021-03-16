@@ -1,4 +1,4 @@
-import React, {useContext} from 'react'
+import React, {useCallback, useContext, useEffect, useState} from 'react'
 import {Link as linkMaterial, AppBar,Container, Toolbar,IconButton,Box,Typography}from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import {Link, useHistory} from 'react-router-dom'
@@ -75,7 +75,6 @@ export const Navbar = () =>{
         <Container fixed>
             <Toolbar>
                 <IconButton edge='start' color="inherit" aria-label='menu' className={classes.menuButton}>
-                    <Avatar alt="Remy Sharp" src="img/slid.jpg" className={classes.large} />
                 </IconButton>
                 <Typography variant="h6" className={classes.title}> Fitness
                 </Typography>

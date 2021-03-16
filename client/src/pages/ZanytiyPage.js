@@ -19,6 +19,7 @@ import {KeyboardDatePicker, KeyboardTimePicker, MuiPickersUtilsProvider} from "@
 import TextareaAutosize from "@material-ui/core/TextareaAutosize";
 import AccessTimeIcon from "@material-ui/icons/AccessTime";
 import moment from "moment";
+import Avatar from "@material-ui/core/Avatar";
 
 
 const useStyles = makeStyles((theme)=>({
@@ -81,17 +82,18 @@ export const ZanytiyPage = (props) =>{
     const [zanytieForm, setZanytieForm] = useState([])
     const curRole=props.role
     const [selectedDate, setSelectedDate] = useState(new Date());
-    const [state, setState] = useState({open: false, stationNumber: 1,});
+    const [state, setState] = useState({openModal: false, stationNumber: 1,});
+    const [statePodrobno, setStatePodrobno] = useState({openModalPodrobno: false, stationNumber: 1,});
     const [name, setName]=useState()
     const [number, setNumber]=useState()
     const [trener, setTrener] = React.useState();
     const [opisanie, setOpisanie] = React.useState();
     const [opodrobno, setOpodrobno] = React.useState();
+    const [idzanytie, setIdZanytie] = React.useState();
 
-    const handleChangeName =(event,name) => {
-        console.log("name", name)
-        console.log("value", event.target.value)
-       setName(name)
+
+    const handleChangeName =(event) => {
+       setName(event.target.value)
 
     };
     const handleChangeNumber = (event) => {
@@ -108,24 +110,39 @@ export const ZanytiyPage = (props) =>{
     const handleChangeOpodrobno = (event) => {
         setOpodrobno(event.target.value);
     };
+    const handleOpenPodrobno = stationNumber =>()=> {
+        console.log("stationNumber",stationNumber )
+        setStatePodrobno({openModalPodrobno:true,stationNumber: stationNumber});
+    };
     const handleOpen = stationNumber =>()=> {
         console.log("stationNumber",stationNumber )
         setState({openModal:true,stationNumber: stationNumber});
+        setName(zanytieForm[stationNumber-1].nazvanie)
+        setNumber(zanytieForm[stationNumber-1].numberzal)
+        setSelectedDate(zanytieForm[stationNumber-1].datetime)
+        setTrener(zanytieForm[stationNumber-1].idtrenera)
+        setOpisanie(zanytieForm[stationNumber-1].opisanie)
+        setOpodrobno(zanytieForm[stationNumber-1].opisaniepodrobno)
+        setIdZanytie(stationNumber)
     };
 
     const handleClose = () => {
         setState({openModal:false,stationNumber: 1});
+        zanytie()
+    };
+    const handleClosePodrobno = () => {
+        setStatePodrobno({openModalPodrobno:false,stationNumber: 1});
     };
     const handleDateChange=(date)=>{
         console.log(date);
         setSelectedDate(date);
     }
-    const handleClickOpen = async (name,number,selectedDate,trener, opisanie, opodrobno) => {
+    const handleClickOpen = async (name, number, trener, opisanie, opisaniepodrobno, selectedDate, idzanytie) => {
         //setOpen(true);
         try {
-            const fetched = await request(`/api/zanytiy/zanytiyPage`, 'POST',{name,number,selectedDate,trener,opisanie,opodrobno})
+            const fetched = await request(`/api/zanytiy/zanytiyPage`, 'POST',{name, number, trener, opisanie, opisaniepodrobno, selectedDate, idzanytie})
             console.log("",fetched)
-
+            handleClose()
         } catch (e) {
             console.log(e)
         }
@@ -226,9 +243,28 @@ export const ZanytiyPage = (props) =>{
                                         </Typography>
                                     </CardContent>
                                     <CardActions>
-                                        <Button size="small" color="primary">
+                                        <Button size="small" color="primary" onClick={handleOpenPodrobno(card.idzanytie)}>
                                             Подробно
                                         </Button>
+                                        <Dialog onClose={handleClosePodrobno} aria-labelledby="customized-dialog-title" open={statePodrobno.openModalPodrobno}>
+                                            <DialogTitle id="customized-dialog-title" onClose={handleClosePodrobno}>
+                                                    {zanytieForm[(statePodrobno.stationNumber)-1].nazvanie}
+
+                                            </DialogTitle>
+                                            <DialogContent dividers>
+                                                <Typography gutterBottom paragraph>
+                                                    {zanytieForm[(statePodrobno.stationNumber)-1].opisaniepodrobno}
+                                                </Typography>
+                                                <Typography gutterBottom paragraph>
+                                                    {moment(zanytieForm[(statePodrobno.stationNumber)-1].datetime).format('LLLL')}
+                                                </Typography>
+                                            </DialogContent>
+                                            <DialogActions>
+                                                <Button autoFocus onClick={handleClosePodrobno} color="primary">
+                                                    Назад
+                                                </Button>
+                                            </DialogActions>
+                                        </Dialog>
                                         {curRole=='admin' && (
                                             <>
                                             <Button size="small" color="primary" onClick={handleOpen(card.idzanytie)}>
@@ -244,7 +280,7 @@ export const ZanytiyPage = (props) =>{
                                                             <FormControl className={classes.formControl}>
                                                         <TextField
                                                             autoFocus
-                                                            onChange={()=>handleChangeName(zanytieForm[(state.stationNumber)-1].nazvanie)}
+                                                            onChange={handleChangeName}
                                                             value={name}
                                                             margin="dense"
                                                             id="name"
@@ -256,14 +292,14 @@ export const ZanytiyPage = (props) =>{
                                                         <FormControl className={classes.formControl}>
                                                         <FormHelperText>Тренер</FormHelperText>
                                                         <NativeSelect
-                                                            defaultValue={zanytieForm[(state.stationNumber)-1].fio_trener}
+                                                            defaultValue={zanytieForm[(state.stationNumber)-1].idtrenera}
                                                             inputProps={{
                                                                 id: 'fio_trener',
                                                             }}
                                                             onChange={handleChangeTrener}
                                                         >
                                                             {zanytieForm.map((option) => (
-                                                                <option value={option.fio_trener} key=
+                                                                <option value={option.idtrenera} key=
                                                                     {option.idtrenera}>
                                                                     {option.fio_trener}
                                                                 </option>
@@ -339,7 +375,7 @@ export const ZanytiyPage = (props) =>{
                                                         <Button onClick={handleClose} color="primary">
                                                             Отменить
                                                         </Button>
-                                                        <Button onClick={()=>handleClickOpen(name,number,selectedDate, trener, opisanie,opodrobno)} color="primary">
+                                                        <Button onClick={()=>handleClickOpen(name, number, trener, opisanie, opodrobno, selectedDate,idzanytie)} color="primary">
                                                             {console.log('ZanForm',zanytieForm[(state.stationNumber)-1])}
                                                             Изменить
                                                         </Button>

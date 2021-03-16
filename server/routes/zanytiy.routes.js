@@ -28,21 +28,19 @@ router.get(
 router.post(
     '/zanytiyPage',
     async (req, res)=>{
-        let values=[req.body.name,dateFormat(req.body.selectedDate,"yyyy-mm-dd HH:MM:ss"), req.body.number, req.body.trener,
-            req.body.opisanie, req.body.opodrobno]
+        console.log("req.body", req.body)
+        let values=[req.body.name, req.body.trener, req.body.number,dateFormat(req.body.selectedDate,"yyyy-mm-dd HH:MM:ss"),
+            req.body.opisanie, req.body.opisaniepodrobno, req.body.idzanytie]
         console.log("values", values)
         try{
-
-
-          /*  console.log("values", values)
-            const insertPt="INSERT INTO fit.personaltren(idclent, idtrener, datatime,name) VALUES (?,?,?,?);"
-            db.query(insertPt, values,(err, result)=>{
+            const updateZanytie="UPDATE fit.zanytie SET nazvanie=?,idtrenera=?, numberzal=?, datetime=?, opisanie=?, opisaniepodrobno=?  WHERE idzanytie=?;"
+            db.query(updateZanytie, values,(err, result)=>{
                 console.log("Error",err)
                 console.log("Результат выборки",result);
 
-                res.json({result});*/
+                res.json({result});
 
-            //});
+            });
         }
         catch (e) {
             return res.status(400).json({message:'Ответил'})

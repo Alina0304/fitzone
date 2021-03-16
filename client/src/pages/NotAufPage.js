@@ -29,6 +29,8 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import MobileStepper from '@material-ui/core/MobileStepper';
 import {Loader} from "../components/Loader";
 import Slide from '@material-ui/core/Slide';
+import PersonIcon from "@material-ui/icons/Person";
+import Avatar from "@material-ui/core/Avatar";
 
 
 moment.lang('ru');
@@ -48,7 +50,12 @@ const useStyles = makeStyles((theme) => ({
     text: {
         left: 10000000,
     },
-
+    rootAvatar: {
+        display: 'flex',
+        '& > *': {
+            margin: theme.spacing(1),
+        },
+    },
     mainFeaturesPost: {
         position: "relative",
         color: theme.palette.common.white,
@@ -127,13 +134,24 @@ export const NotAufPage = () => {
     const [infoFormZan, setInfoFormZan] = useState([])
     const [infoFormTrener, setInfoFormTrener] = useState([])
     const [open, setOpen] = React.useState(false);
-
+    const [state, setState] = React.useState({
+        openModal: false,
+        stationNumber: 1,
+    });
     const handleClickOpen = () => {
         setOpen(true);
     };
 
     const handleClose = () => {
         setOpen(false);
+    };
+    const handleClickOpenModal = stationNumber =>()=> {
+        console.log("stationNumber",stationNumber )
+        setState({openModal:true,stationNumber: stationNumber});
+    };
+
+    const handleCloseModal = () => {
+        setState({openModal:false,stationNumber: 1});
     };
     const [activeStep, setActiveStep] = React.useState(0);
     const maxSteps = infoFormZan.length;
@@ -275,7 +293,7 @@ export const NotAufPage = () => {
                                                 id="alert-dialog-slide-title">{infoFormZan[activeStep].nazvanie}</DialogTitle>
                                             <DialogContent>
                                                 <DialogContentText id="alert-dialog-slide-description">
-                                                    {infoFormZan[activeStep].opisanie}
+                                                    {infoFormZan[activeStep].opisaniepodrobno}
 
                                                 </DialogContentText>
                                                 <DialogContentText id="alert-dialog-slide-description">
@@ -343,9 +361,33 @@ export const NotAufPage = () => {
                                             </Typography>
                                         </CardContent>
                                         <CardActions>
-                                            <Button size="small" color="primary">
+                                            <Button size="small" color="primary" onClick={handleClickOpenModal(card.idtrener)}>
                                                 Подробнее
                                             </Button>
+                                            <Dialog onClose={handleCloseModal} aria-labelledby="customized-dialog-title" open={state.openModal}>
+                                                <DialogTitle id="customized-dialog-title" onClose={handleCloseModal}>
+                                                    <div className={classes.rootAvatar}>
+                                                    <Avatar src={infoFormTrener[(state.stationNumber)-1].img} />
+                                                    {infoFormTrener[(state.stationNumber)-1].fio_trener}
+                                                    </div>
+                                                </DialogTitle>
+                                                <DialogContent dividers>
+                                                    <Typography gutterBottom paragraph>
+                                                        {infoFormTrener[(state.stationNumber)-1].kategory}
+                                                    </Typography>
+                                                    <Typography gutterBottom paragraph>
+                                                        {infoFormTrener[(state.stationNumber)-1].opisanie}
+                                                    </Typography>
+                                                    <Typography gutterBottom paragraph>
+                                                        {infoFormTrener[(state.stationNumber)-1].citat}
+                                                    </Typography>
+                                                </DialogContent>
+                                                <DialogActions>
+                                                    <Button autoFocus onClick={handleCloseModal} color="primary">
+                                                        Назад
+                                                    </Button>
+                                                </DialogActions>
+                                            </Dialog>
                                         </CardActions>
                                     </Card>
                                 </Grid>
