@@ -16,13 +16,21 @@
   "license": "ISC",
   "dependencies": {
     "bcryptjs": "^2.4.3",
+    "body-parser": "^1.19.0",
     "config": "^3.3.3",
     "dateformat": "^4.5.1",
     "express": "^4.17.1",
+    "express-formidable": "^1.2.0",
     "express-validator": "^6.9.2",
+    "file-system": "^2.2.2",
+    "formidable": "^1.2.2",
+    "fs": "0.0.1-security",
     "jsonwebtoken": "^8.5.1",
     "mysql": "^2.18.1",
+    "node-fs": "^0.1.7",
+    "path": "^0.12.7",
     "prop-types": "^15.7.2",
-    "react-native-toast-message": "^1.4.3"
+    "react-native-toast-message": "^1.4.3",
+    "uuid": "^8.3.2"
   }
 }

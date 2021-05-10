@@ -22,6 +22,7 @@ import DialogActions from "@material-ui/core/DialogActions";
 import Dialog from "@material-ui/core/Dialog";
 import Slide from "@material-ui/core/Slide";
 import {Loader} from "../components/Loader";
+import Avatar from "@material-ui/core/Avatar";
 
 const useStyles = makeStyles((theme)=>({
     root: {
@@ -90,38 +91,72 @@ export const NoutingPersonalTrenPage = (props) =>{
     const {loading, error, request, clearError} = useHttp();
     const {token} = useContext(AuthContext)
     const curId = props.userId
+    const [resultCount, setResultCount]=useState(true);
+    console.log("CurId", curId)
+    const curEmail=props.email
+    console.log("Email", curEmail)
     const [noutingForm, setNoutingForm] = useState([{
         idzanytie:'',nazvanie:'', fio_trener:'',idtrener:'', img:'',datatime:''
     }])
     const [selectedDate, setSelectedDate] = useState(new Date());
-    const [state, setState] = React.useState({
-        openModal: false,
-        stationNumber: 1,
-    });
-const handleDateChange=(date)=>{
+    const [state, setState] = useState({openModal: false,stationNumber: 1,});
+    const [more, setMore] = useState({openModalMore: false,stationNumber: 1,});
+    const [alert, setAlert]=useState([])
+    const handleDateChange=(date)=>{
     console.log(date);
     setSelectedDate(date);
-}
+    }
 
+    const handleClickOpen = async (card,selectedDate,curEmail) => {
+            try {
+                const fetched = await request(`/api/nouting/inserting/${curId}`, 'POST', {
+                    ...card,
+                    selectedDate,
+                    curEmail
+                }, {Authorization: `Bearer ${token}`})
+                console.log("", fetched)
 
-    const handleClickOpen = async (card,selectedDate) => {
-        try {
-            const fetched = await request(`/api/nouting/inserting/${curId}`, 'POST',{...card,selectedDate},{Authorization: `Bearer ${token}`})
-            console.log("",fetched)
+            } catch (e) {
+                console.log(e)
+            }
+            handleCloseModal()
+    };
 
+    const handleClickOpenModal = async (stationNumber,card,selectedDate) => {
+        console.log("stationNumber",stationNumber )
+        setState({openModal:true,stationNumber: stationNumber});
+       try {
+           console.log("ТУТТ")
+            const fetched = await request(`/api/nouting/selecttrenerpt/${curId}`, 'POST',{...card,selectedDate},{Authorization: `Bearer ${token}`})
+            console.log("Поймали",fetched)
+           if (fetched.resultCount>0)
+               setResultCount(false);
         } catch (e) {
             console.log(e)
         }
-        handleCloseModal()
-    };
 
-    const handleClickOpenModal = stationNumber =>()=> {
-        console.log("stationNumber",stationNumber )
-        setState({openModal:true,stationNumber: stationNumber});
     };
 
     const handleCloseModal = () => {
         setState({openModal:false,stationNumber: 1});
+    };
+
+    const handleClickOpenMore = stationNumber =>()=> {
+        console.log("StationNumber", stationNumber)
+        setMore({openModalMore:true,stationNumber: stationNumber});
+    };
+
+    const handleCloseMore = () => {
+        setMore({openModalMore:false,stationNumber: 1});
+    };
+
+    const handleAlertOpen = () => {
+        setAlert(true);
+    };
+
+    const handleAlertClose = () => {
+        setAlert(false);
+        handleCloseModal()
     };
 
 
@@ -133,12 +168,10 @@ const handleDateChange=(date)=>{
             })
             console.log("Fetched",fetched)
             setNoutingForm(fetched.result)
-
-
         } catch (e) {
             console.log(e)
         }
-    }, [request])
+    }, [request, token, curId])
 
     useEffect(() => {
         nouting()
@@ -241,7 +274,7 @@ const handleDateChange=(date)=>{
                                         </MuiPickersUtilsProvider>
                                     </CardContent>
                                     <CardActions>
-                                        <Button onClick={handleClickOpenModal(card.idzanytie)} size="small" color="primary">
+                                        <Button onClick={()=>handleClickOpenModal(card.idzanytie, noutingForm[(state.stationNumber)-1], selectedDate)} size="small" color="primary">
                                             ЗАПИСЬ {console.log("idzanytie",card.idzanytie)}
                                         </Button>
 
@@ -263,32 +296,69 @@ const handleDateChange=(date)=>{
                                                 </DialogContentText>
                                             </DialogContent>
                                             <DialogActions>
-                                                <Button onClick={()=>handleClickOpen(noutingForm[(state.stationNumber)-1],selectedDate)} color="primary">
-                                                    Запись
-                                                </Button>
+                                                {console.log("RESULT", resultCount)}
+                                                {resultCount ? (
+                                                        <Button
+                                                            onClick={() => handleClickOpen(noutingForm[(state.stationNumber) - 1], selectedDate, curEmail)}
+                                                            color="primary">
+                                                            Запись
+                                                        </Button>)
+                                                    : (
+                                                        <>
+                                                            <Button onClick={() => handleAlertOpen()} color="primary">
+                                                                Запись
+                                                            </Button>
+                                                            <Dialog
+                                                                open={alert}
+                                                                onClose={handleAlertClose}
+                                                                aria-labelledby="alert-dialog-title"
+                                                                aria-describedby="alert-dialog-description"
+                                                            >
+                                                                <DialogTitle
+                                                                    id="alert-dialog-title">{"Данное время уже занято"}</DialogTitle>
+                                                                <DialogContent>
+                                                                    <DialogContentText id="alert-dialog-description">
+                                                                        Выбранное время для записи уже занято. Пожалуйста, выберете другое время или свяжитесь с нами по телефону для записи.
+                                                                        тел: 895742024621
+                                                                    </DialogContentText>
+                                                                </DialogContent>
+                                                                <DialogActions>
+                                                                    <Button onClick={handleAlertClose} color="primary">
+                                                                        Закрыть
+                                                                    </Button>
+                                                                </DialogActions>
+                                                            </Dialog>
+                                                        </>
+                                                    )}
                                                 <Button onClick={handleCloseModal} color="primary">
                                                     Назад
                                                 </Button>
                                             </DialogActions>
                                         </Dialog>
-                                        <Button size="small" color="primary"  onClick={handleClickOpenModal(card.idzanytie)}>
-                                            УЗНАТЬ БОЛЬШЕ
+                                        <Button size="small" color="primary" onClick={handleClickOpenMore(card.idzanytie)}>
+                                            Подробно
                                         </Button>
-                                        <Dialog onClose={handleCloseModal} aria-labelledby="customized-dialog-title" open={state.openModal}>
-                                            <DialogTitle id="customized-dialog-title" onClose={handleCloseModal}>
-                                                {noutingForm[(state.stationNumber)-1].nazvanie}
+                                        <Dialog onClose={handleCloseMore} aria-labelledby="customized-dialog-title" open={more.openModalMore}>
+                                            <DialogTitle id="customized-dialog-title" onClose={handleCloseMore}>
+                                                <div className={classes.rootAvatar}>
+                                                    <Avatar src={noutingForm[(more.stationNumber-1)].img} />
+                                                    {noutingForm[(more.stationNumber-1)].nazvanie}
+                                                </div>
                                             </DialogTitle>
                                             <DialogContent dividers>
-                                                <Typography gutterBottom>
-                                                    {noutingForm[(state.stationNumber)-1].opisaniepodrobno}
+                                                <Typography gutterBottom paragraph>
+                                                    <PersonIcon fontSize="large" />{noutingForm[(more.stationNumber-1)].fio_trener}
                                                 </Typography>
-                                                <Typography gutterBottom>
-                                                    <PersonIcon/>
-                                                    Тренер: {noutingForm[(state.stationNumber)-1].fio_trener}
+                                                <Typography gutterBottom paragraph>
+                                                    <ScheduleIcon fontSize="large"/>
+                                                    {moment(noutingForm[(more.stationNumber-1)].datatime).format("dddd, HH:MM")}
+                                                </Typography>
+                                                <Typography gutterBottom paragraph>
+                                                    {noutingForm[(more.stationNumber-1)].opisaniepodrobno}
                                                 </Typography>
                                             </DialogContent>
                                             <DialogActions>
-                                                <Button autoFocus onClick={handleCloseModal} color="primary">
+                                                <Button autoFocus onClick={handleCloseMore} color="primary">
                                                     Назад
                                                 </Button>
                                             </DialogActions>

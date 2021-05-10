@@ -7,6 +7,10 @@ import {ZanytiyPage} from "./pages/ZanytiyPage";
 import {NotAufPage} from "./pages/NotAufPage";
 import {AuthContext} from "./context/AuthContext";
 import {NoutingPersonalTrenPage} from "./pages/NoutingPersonalTrenPage";
+import {ResetPage} from "./pages/ResetPage";
+import {ResetPageNewPassword} from "./pages/ResetPageNewPassword";
+import {AbonPayPage} from "./pages/AbonPayPage";
+import {RegistrationPage} from "./pages/RegistrationPage";
 
 
 export const useRoutes = isAuthenticated =>{
@@ -39,11 +43,24 @@ export const useRoutes = isAuthenticated =>{
                 <Route path="/noutingpt" exact>
                     <AuthContext.Consumer>
                         {value =>
-                            <NoutingPersonalTrenPage userId={value.userId}/>
+                            <NoutingPersonalTrenPage userId={value.userId} email={value.email}/>
                         }
                         </AuthContext.Consumer>
                 </Route>
-
+                <Route path="/abonpay" exact>
+                    <AuthContext.Consumer>
+                        {value =>
+                            <AbonPayPage userId={value.userId} role={value.role}/>
+                        }
+                    </AuthContext.Consumer>
+                </Route>
+                <Route path="/registration" exact>
+                    <AuthContext.Consumer>
+                        {value =>
+                            <RegistrationPage role={value.role}/>
+                        }
+                    </AuthContext.Consumer>
+                </Route>
             </Switch>
         )
     }
@@ -56,10 +73,17 @@ export const useRoutes = isAuthenticated =>{
                 <Route path="/fitzone" exact>
                     <NotAufPage />
                 </Route>
+                <Route path="/resetpassword" exact>
+                    <ResetPage />
+                </Route>
+                <Route path="/reset/:token" exact render={(props)=><ResetPageNewPassword {...props}/>}>
+                </Route>
                 <Route path="/" exact>
                     <NotAufPage />
                 </Route>
-
+                <Route path="/registration" exact>
+                    <RegistrationPage />
+                </Route>
             </Switch>
         )
     }

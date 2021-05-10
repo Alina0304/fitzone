@@ -42,7 +42,7 @@ const useStyles = makeStyles(theme => ({
     },
 }));
 
-export const AuthPage = ({email,password,}) => {
+export const AuthPage = () => {
     const auth = useContext(AuthContext)
     const message = useMessage();
     const {loading, error, request, clearError} = useHttp();
@@ -70,7 +70,7 @@ export const AuthPage = ({email,password,}) => {
         try {
             const data = await request('/api/auth/login', 'POST', {...form})
             console.log("Data", data);
-            auth.login(data.token, data.userId, data.role)
+            auth.login(data.token, data.userId, data.role,data.email)
 
 
         } catch (e) {
@@ -128,12 +128,14 @@ export const AuthPage = ({email,password,}) => {
                         </Button>
                         <Grid container>
                             <Grid item xs>
-                                <Link href="#" variant="body2">
+                                <Button
+                                    component={Link} to="/resetpassword" variant="body2">
                                     Забыли пароль?
-                                </Link>
+                                </Button>
                             </Grid>
                             <Grid item>
                                 <Button
+                                    component={Link} to="/registration"
                                     variant="body2"
                                     onClick={registerHandler}
                                     disabled={loading}>

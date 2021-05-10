@@ -63,8 +63,8 @@ const useStyles = makeStyles((theme)=>({
 }))
 
 function App() {
-    const {token, login,role, logout, userId,ready}=useAuth()
-    console.log(token)
+    const {token, login,role, logout, userId,ready, email}=useAuth()
+    console.log('EMAIL', email)
     console.log('role1', role)
     let isAuthenticated = !!token
     console.log(isAuthenticated)
@@ -74,7 +74,7 @@ function App() {
         return <Loader />
     }
 return(
-    <AuthContext.Provider value={{token, logout, login, userId, role, isAuthenticated}}>
+    <AuthContext.Provider value={{token, logout, login, userId, role, isAuthenticated, email}}>
     <Router>
         {isAuthenticated && <Navbar/>}
         <div className='container'>

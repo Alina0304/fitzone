@@ -86,10 +86,10 @@ export const ZanytiyPage = (props) =>{
     const [statePodrobno, setStatePodrobno] = useState({openModalPodrobno: false, stationNumber: 1,});
     const [name, setName]=useState()
     const [number, setNumber]=useState()
-    const [trener, setTrener] = React.useState();
-    const [opisanie, setOpisanie] = React.useState();
-    const [opodrobno, setOpodrobno] = React.useState();
-    const [idzanytie, setIdZanytie] = React.useState();
+    const [trener, setTrener] = useState();
+    const [opisanie, setOpisanie] = useState();
+    const [opodrobno, setOpodrobno] = useState();
+    const [idzanytie, setIdZanytie] = useState();
 
 
     const handleChangeName =(event) => {

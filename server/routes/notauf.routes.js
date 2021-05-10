@@ -27,7 +27,8 @@ router.get(
     '/fitzonetreners',
     async (req, res) => {
         try{
-            const trener="SELECT trener.idtrener,trener.fio_trener,trener.stag,trener.phone,trener.kategory,trener.opisanie,trener.citat,trener.img FROM fit.trener;"
+            const trener=`SELECT trener.idtrener,trener.stag,trener.kategory,trener.opisanie,trener.citat, trenersdata.FIO_cl as fio_trener, trenersdata.img, trenersdata.Phone as phone FROM fit.trener 
+JOIN fit.account_kl AS trenersdata ON trenersdata.id=trener.idtrener;`
             db.query(trener, [],(err, result)=>{
                 console.log("Error",err)
                 console.log("Результат выборки",result);

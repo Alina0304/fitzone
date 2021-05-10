@@ -18,6 +18,7 @@ import NativeSelect from "@material-ui/core/NativeSelect";
 import {KeyboardDatePicker, KeyboardTimePicker, MuiPickersUtilsProvider} from "@material-ui/pickers";
 import DateFnsUtils from "@date-io/date-fns";
 import TextareaAutosize from "@material-ui/core/TextareaAutosize";
+import useMediaQuery from "@material-ui/core/useMediaQuery";
 
 
 const useStyles = makeStyles((theme)=>({
@@ -88,6 +89,7 @@ export const TrenersPage = (props) => {
     const [citat, setCitat]=useState()
     const [trener, setIdTrener]=useState()
     const [state, setState] = useState({openModal: false, stationNumber: 1});
+    const [stateDelete, setStateDelete] = useState({openModalDelete: false, stationNumber: 1});
     const [statePodrobno, setStatePodrobno] = React.useState({
         openModalPodrobno: false,
         stationNumber: 1,
@@ -113,7 +115,6 @@ export const TrenersPage = (props) => {
     };
 
     const handleClickOpenModal = stationNumber =>()=> {
-        console.log("stationNumber",stationNumber )
         setStatePodrobno({openModalPodrobno:true,stationNumber: stationNumber});
     };
 
@@ -146,6 +147,17 @@ export const TrenersPage = (props) => {
 
     const handleClose = () => {
         setState({openModal:false,stationNumber: 1});
+        treners()
+    };
+
+    const handleOpenDelete = stationNumber =>()=> {
+        console.log("stationNumber",stationNumber )
+        setStateDelete({openModalDelete:true,stationNumber: stationNumber});
+
+    };
+
+    const handleCloseDelete = () => {
+        setStateDelete({openModalDelete:false,stationNumber: 1});
         treners()
     };
     const treners = useCallback(async () => {
@@ -368,6 +380,30 @@ export const TrenersPage = (props) => {
                                                         <Button onClick={()=>handleClickOpen(name, stag, phone, kategory, opisanie, citat, trener)} color="primary">
                                                             {console.log('ZanForm',trenerForm[(state.stationNumber)-1])}
                                                             Изменить
+                                                        </Button>
+                                                    </DialogActions>
+                                                </Dialog>
+                                                <Button size="small" color="primary" onClick={handleOpenDelete(card.idtrener)}>
+                                                    Удалить
+                                                </Button>
+                                                <Dialog
+                                                    open={stateDelete.openModalDelete}
+                                                    onClose={handleCloseDelete}
+                                                    aria-labelledby="delete-dialog-title"
+                                                >
+                                                    <DialogTitle id="delete-dialog-title">Удалить {trenerForm[(state.stationNumber)-1].fio_trener}</DialogTitle>
+                                                    <DialogContent>
+                                                        <DialogContentText>
+                                                            Вы действительно хотите удалить тренера {trenerForm[(state.stationNumber)-1].fio_trener}?
+                                                            Восстановление информации будет невозможно.
+                                                        </DialogContentText>
+                                                    </DialogContent>
+                                                    <DialogActions>
+                                                        <Button autoFocus onClick={handleCloseDelete} color="primary">
+                                                            Удалить
+                                                        </Button>
+                                                        <Button onClick={handleCloseDelete} color="primary" autoFocus>
+                                                            Отменить
                                                         </Button>
                                                     </DialogActions>
                                                 </Dialog>

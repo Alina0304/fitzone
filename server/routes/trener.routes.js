@@ -13,7 +13,8 @@ router.get(
     '/trenersPage',
     async (req, res) => {
         try{
-            const trener="SELECT idtrener,fio_trener,stag,phone,kategory,img,opisanie,citat FROM fit.trener;"
+            const trener=`SELECT trener.idtrener,account_kl.FIO_cl AS fio_trener,trener.stag,account_kl.phone,trener.kategory,account_kl.img,
+trener.opisanie,trener.citat FROM fit.trener, fit.account_kl WHERE account_kl.id=trener.idtrener;`
             db.query(trener, [],(err, result)=>{
                 console.log("Error",err)
                 console.log("Результат выборки",result);
@@ -35,7 +36,8 @@ router.post(
             req.body.opisanie, req.body.citat, req.body.trener]
         console.log("values", values)
         try{
-            const updateTrener="UPDATE fit.trener SET fio_trener=?,stag=?, phone=?, kategory=?, opisanie=?, citat=?  WHERE idtrener=?;"
+            const updateTrener=`UPDATE fit.trener JOIN fit.account_kl ON trener.idtrener=account_kl.id SET FIO_cl=?,
+stag=?, account_kl.phone=?, kategory=? opisanie=?, citat=? WHERE idtrener=?;`
             db.query(updateTrener, values,(err, result)=>{
                 console.log("Error",err)
                 console.log("Результат выборки",result);

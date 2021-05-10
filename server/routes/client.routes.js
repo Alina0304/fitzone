@@ -9,16 +9,14 @@ router.get(
     async (req, res) => {
         try{
             console.log("req params", req.params.id)
-            const client=`SELECT account_kl.id,account_kl.FIO_cl,account_kl.Age,account_kl.Phone, account_kl.id_abon, account_kl.Activity, account_kl.DateActivity, account_kl.img,
- personaltren.idpt,personaltren.status,personaltren.idclent,personaltren.idtrener,personaltren.datatime,personaltren.name,trener.fio_trener
-  FROM fit.account_kl 
-JOIN fit.personaltren ON personaltren.idclent=account_kl.id 
-JOIN fit.trener ON trener.idtrener=personaltren.idtrener WHERE account_kl.id=?;`
+            const client=`SELECT clientsdata.id,clientsdata.FIO_cl, clientsdata.img,  trenersdata.FIO_cl AS fio_trener, 
+personaltren.idpt,personaltren.status,personaltren.datatime,zanytie.nazvanie FROM fit.account_kl AS clientsdata
+JOIN fit.personaltren ON clientsdata.id=personaltren.idclent
+JOIN fit.trener ON personaltren.idtrener=trener.idtrener
+JOIN fit.account_kl AS trenersdata ON trener.idtrener=trenersdata.id
+JOIN fit.zanytie ON zanytie.idzanytie=personaltren.idzan
+WHERE clientsdata.id=? order by personaltren.datatime;`
             db.query(client, [req.params.id],(err, result)=>{
-
-               // console.log("Error",err)
-                //console.log("Результат выборки",result);
-
                 res.json({result});
 
             });
@@ -34,18 +32,14 @@ router.get(
     async (req, res) => {
         try{
             console.log("req params", req.params.id)
-            const admin=`SELECT account_kl.id,account_kl.FIO_cl,account_kl.Age,account_kl.Phone, account_kl.id_abon, account_kl.Activity, account_kl.DateActivity, account_kl.img,
- personaltren.idpt,personaltren.idclent,personaltren.idtrener,personaltren.datatime,personaltren.name,personaltren.status,trener.fio_trener
-  FROM fit.account_kl 
-JOIN fit.personaltren ON personaltren.idclent=account_kl.id 
-JOIN fit.trener ON trener.idtrener=personaltren.idtrener;`
+            const admin=`SELECT clientsdata.id, clientsdata.FIO_cl, trenersdata.FIO_cl, clientsdata.Age, clientsdata.Phone, clientsdata.Activity, clientsdata.img,
+ personaltren.idpt,personaltren.idclent,personaltren.idtrener,personaltren.datatime,zanytie.nazvanie,personaltren.status FROM fit.account_kl AS clientsdata
+JOIN fit.personaltren ON personaltren.idclent=clientsdata.id 
+JOIN fit.trener ON trener.idtrener=personaltren.idtrener 
+JOIN fit.zanytie ON zanytie.idzanytie=personaltren.idzan
+JOIN fit.account_kl AS trenersdata ON trenersdata.id=trener.idtrener order by clientsdata.FIO_cl, personaltren.datatime;`
             db.query(admin,[],(err, result)=>{
-
-               // console.log("Error",err)
-               // console.log("Результат выборки",result);
-
                 res.json({result});
-
             });
 
         }catch (e) {
@@ -59,11 +53,13 @@ router.get(
     async (req, res) => {
         try{
             console.log("req params", req.params.id)
-            const trener=`SELECT account_kl.id,account_kl.FIO_cl,account_kl.Age,account_kl.Phone, account_kl.id_abon, account_kl.Activity, account_kl.DateActivity, account_kl.img,
- personaltren.idpt,personaltren.idclent,personaltren.idtrener,personaltren.datatime,personaltren.name,personaltren.status,trener.fio_trener
-  FROM fit.account_kl 
-JOIN fit.personaltren ON personaltren.idclent=account_kl.id 
-JOIN fit.trener ON trener.idtrener=personaltren.idtrener WHERE personaltren.idtrener=?;`
+            const trener=`SELECT clientsdata.id,clientsdata.FIO_cl,clientsdata.Age,clientsdata.Phone, clientsdata.id_abon, clientsdata.Activity, clientsdata.DateActivity, clientsdata.img,
+ personaltren.idpt,personaltren.idclent,personaltren.idtrener,personaltren.datatime,zanytie.nazvanie,personaltren.status, trenersdata.FIO_cl AS fio_trener
+  FROM fit.account_kl AS clientsdata
+JOIN fit.personaltren ON personaltren.idclent=clientsdata.id 
+JOIN fit.trener ON trener.idtrener=personaltren.idtrener 
+JOIN fit.zanytie ON zanytie.idzanytie=personaltren.idzan
+JOIN fit.account_kl AS trenersdata ON trenersdata.id=trener.idtrener WHERE personaltren.idtrener=? order by personaltren.datatime;`
             db.query(trener,[req.params.id],(err, result)=>{
 
                 // console.log("Error",err)

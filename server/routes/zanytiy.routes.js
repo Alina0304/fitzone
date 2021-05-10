@@ -8,10 +8,11 @@ router.get(
     '/zanytiyPage',
     async (req, res) => {
         try{
-            const zanytie=`SELECT fit.zanytie.idzanytie, fit.zanytie.idtrenera, fit.zanytie.datetime, 
-                           fit.zanytie.numberzal, fit.zanytie.nazvanie, fit.zanytie.opisanie,fit.zanytie.opisaniepodrobno,
-                            fit.zanytie.img, fit.trener.fio_trener
-                            FROM fit.zanytie JOIN fit.trener ON fit.zanytie.idtrenera=fit.trener.idtrener;`
+            const zanytie=`SELECT zanytie.idzanytie, zanytie.idtrenera, zanytie.datetime, 
+                           zanytie.numberzal, zanytie.nazvanie, zanytie.opisanie,zanytie.opisaniepodrobno,
+                           zanytie.img, trener.idtrener, account_kl.FIO_cl as fio_trener
+                            FROM zanytie JOIN trener ON zanytie.idtrenera=trener.idtrener
+                            JOIN account_kl ON trener.idtrener=account_kl.id;`
             db.query(zanytie, [],(err, result)=>{
                 console.log("Error",err)
                 console.log("Результат выборки",result);

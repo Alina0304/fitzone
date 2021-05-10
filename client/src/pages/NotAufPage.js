@@ -29,7 +29,6 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import MobileStepper from '@material-ui/core/MobileStepper';
 import {Loader} from "../components/Loader";
 import Slide from '@material-ui/core/Slide';
-import PersonIcon from "@material-ui/icons/Person";
 import Avatar from "@material-ui/core/Avatar";
 
 
@@ -162,14 +161,35 @@ export const NotAufPage = () => {
     }
     const steps = [
         {
-            id: '0',
-            message: 'Welcome to react chatbot!',
-            trigger: '1',
+            id: '1',
+            message: 'Привет! Чем я могу тебе помочь?',
+            trigger: '2',
         },
         {
-            id: '1',
-            message: 'Bye!',
-            end: true,
+            id: '2',
+            options: [
+                { value: 1, label: 'Узнать расписание', trigger: '3' },
+                { value: 2, label: 'Как стать клиетом фитнес-клуба?', trigger: '4' },
+                { value: 3, label: 'Какие тренировки есть?', trigger: '5' },
+            ],
+        },
+        {
+            id: '3',
+            message: 'Мы работаем: Пн-Пт: 8:00-23:00, Сб-Вс: 9:00-21:00',
+            trigger: '2',
+        },
+        {
+            id: '4',
+            message: 'Оставьте нам заявку на сайте, свяжитесь с нами в соц-сетях или позвоните по номеру: +********* наш менеджер свяжется с Вами!',
+            trigger: "2",
+        },
+        {
+            id: '5',
+            message: 'Список наших тренировок: ',
+            component: (
+                    <div> {infoFormTrener.map((card) => (<Typography> variant="h4">{card.nazvanie}</Typography>))}</div>
+            ),
+            trigger: "2",
         },
     ];
     const info = useCallback(async () => {
@@ -219,7 +239,7 @@ export const NotAufPage = () => {
                                 </Button>
                             </Box>
 
-                            <Button component={Link} to="/" color="inherit" align="left">Регистрация</Button>
+                            <Button component={Link} to="/registration" color="inherit" align="left">Регистрация</Button>
                         </Toolbar>
                     </Container>
                 </AppBar>
@@ -258,8 +278,8 @@ export const NotAufPage = () => {
                         <div className={classes.mainButtons}>
                             <Grid container spacing={4} justify="center">
                                 <Grid item>
-                                    <Button component={Link} to="/" variant="contained" color='primary'>
-                                        Start now
+                                    <Button component={Link} to="/login" variant="contained" color='primary'>
+                                        Начать сейчас
                                     </Button>
                                 </Grid>
                             </Grid>
@@ -367,19 +387,20 @@ export const NotAufPage = () => {
                                             <Dialog onClose={handleCloseModal} aria-labelledby="customized-dialog-title" open={state.openModal}>
                                                 <DialogTitle id="customized-dialog-title" onClose={handleCloseModal}>
                                                     <div className={classes.rootAvatar}>
-                                                    <Avatar src={infoFormTrener[(state.stationNumber)-1].img} />
-                                                    {infoFormTrener[(state.stationNumber)-1].fio_trener}
+                                                    <Avatar src={infoFormTrener[(state.stationNumber-1)].img} />
+                                                    {infoFormTrener[(state.stationNumber-1)].fio_trener}
+                                                    {console.log("Station number", state.stationNumber)}
                                                     </div>
                                                 </DialogTitle>
                                                 <DialogContent dividers>
                                                     <Typography gutterBottom paragraph>
-                                                        {infoFormTrener[(state.stationNumber)-1].kategory}
+                                                        {infoFormTrener[(state.stationNumber-1)].kategory}
                                                     </Typography>
                                                     <Typography gutterBottom paragraph>
-                                                        {infoFormTrener[(state.stationNumber)-1].opisanie}
+                                                        {infoFormTrener[(state.stationNumber-1)].opisanie}
                                                     </Typography>
                                                     <Typography gutterBottom paragraph>
-                                                        {infoFormTrener[(state.stationNumber)-1].citat}
+                                                        {infoFormTrener[(state.stationNumber-1)].citat}
                                                     </Typography>
                                                 </DialogContent>
                                                 <DialogActions>
@@ -397,7 +418,10 @@ export const NotAufPage = () => {
                 </Container>
             </main>
             <div align="right">
-                <ChatBot steps={steps}/>
+                <ChatBot
+                    headerTitle="Speech Recognition"
+                    recognitionEnable={true}
+                    steps={steps}/>
             </div>
         </>
     );

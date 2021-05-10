@@ -4,6 +4,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
 import Typography from '@material-ui/core/Typography';
 import Link from '@material-ui/core/Link';
+import CssBaseline from "@material-ui/core/CssBaseline";
 
 function Copyright() {
     return (
@@ -19,33 +20,32 @@ function Copyright() {
 }
 
 const useStyles = makeStyles((theme) => ({
+    root: {
+        display: 'flex',
+        flexDirection: 'column',
+        minHeight: '5vh',
+    },
+    main: {
+        marginTop: theme.spacing(8),
+        marginBottom: theme.spacing(2),
+    },
     footer: {
-        backgroundColor: theme.palette.background.paper,
-        // marginTop: theme.spacing(8),
-        padding: theme.spacing(6, 0),
+        padding: theme.spacing(3, 2),
+        marginTop: 'auto',
+        backgroundColor:theme.palette.background.paper,
     },
 }));
 
-export const Footer=(props)=>{
+export const Footer=()=> {
     const classes = useStyles();
-    const { description, title } = props;
 
     return (
-        <footer className={classes.footer}>
-            <Container maxWidth="lg">
-                <Typography variant="h6" align="center" gutterBottom>
-                    {title}
-                </Typography>
-                <Typography variant="subtitle1" align="center" color="textSecondary" component="p">
-                    {description}
-                </Typography>
-                <Copyright />
-            </Container>
-        </footer>
+        <div className={classes.root}>
+            <footer className={classes.footer}>
+                <Container maxWidth="sm">
+                    <Copyright />
+                </Container>
+            </footer>
+        </div>
     );
 }
-
-Footer.propTypes = {
-    description: PropTypes.string,
-    title: PropTypes.string,
-};
