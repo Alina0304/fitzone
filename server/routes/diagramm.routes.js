@@ -8,7 +8,7 @@ router.get(
     '/diagramTrenerClient',
     async (req, res) => {
         try{
-            const trenerClient=`SELECT personaltren.idtrener,account_kl.FIO_cl, trener.idtrener, COUNT(*) AS col FROM 
+            const trenerClient=`SELECT personaltren.idtrener,account_kl.FIO_cl, trener.idtrener, COUNT(*) AS Всего FROM 
 personaltren 
 JOIN trener ON personaltren.idtrener=trener.idtrener 
 JOIN account_kl ON account_kl.id=trener.idtrener 

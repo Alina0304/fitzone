@@ -9,8 +9,9 @@ import {AuthContext} from "./context/AuthContext";
 import {NoutingPersonalTrenPage} from "./pages/NoutingPersonalTrenPage";
 import {ResetPage} from "./pages/ResetPage";
 import {ResetPageNewPassword} from "./pages/ResetPageNewPassword";
-import {AbonPayPage} from "./pages/AbonPayPage";
+import {LongingAbonPage} from "./pages/LongingAbonPage";
 import {RegistrationPage} from "./pages/RegistrationPage";
+import {PayInfo} from "./pages/PayInfo";
 
 
 export const useRoutes = isAuthenticated =>{
@@ -47,10 +48,10 @@ export const useRoutes = isAuthenticated =>{
                         }
                         </AuthContext.Consumer>
                 </Route>
-                <Route path="/abonpay" exact>
+                <Route path="/longingabon" exact>
                     <AuthContext.Consumer>
                         {value =>
-                            <AbonPayPage userId={value.userId} role={value.role}/>
+                            <LongingAbonPage userId={value.userId} role={value.role}/>
                         }
                     </AuthContext.Consumer>
                 </Route>
@@ -58,6 +59,20 @@ export const useRoutes = isAuthenticated =>{
                     <AuthContext.Consumer>
                         {value =>
                             <RegistrationPage role={value.role}/>
+                        }
+                    </AuthContext.Consumer>
+                </Route>
+                <Route path="/registration" exact>
+                    <AuthContext.Consumer>
+                        {value =>
+                            <RegistrationPage role={value.role}/>
+                        }
+                    </AuthContext.Consumer>
+                </Route>
+                <Route path="/offlinepay" exact>
+                    <AuthContext.Consumer>
+                        {value =>
+                            <PayInfo role={value.role} userId={value.userId}/>
                         }
                     </AuthContext.Consumer>
                 </Route>

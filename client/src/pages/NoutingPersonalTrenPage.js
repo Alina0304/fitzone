@@ -119,6 +119,16 @@ export const NoutingPersonalTrenPage = (props) =>{
             } catch (e) {
                 console.log(e)
             }
+        try {
+            const fetched = await request(`/api/nouting/insertingtwo/${curId}`, 'POST', {
+                ...card,
+                selectedDate,
+            }, {Authorization: `Bearer ${token}`})
+            console.log("", fetched)
+
+        } catch (e) {
+            console.log(e)
+        }
             handleCloseModal()
     };
 

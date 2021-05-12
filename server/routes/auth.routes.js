@@ -13,7 +13,7 @@ const db=require('../config/db.conn')
 
 const {check, validationResult} = require('express-validator')
 const router=Router()
-const curDate=new Date()
+const curDate=new Date().getUTCMilliseconds();
 
 // /api/auth/register
 router.post(
@@ -36,7 +36,7 @@ router.post(
             const password=req.body.password;
 
             const candidate="SELECT (email) FROM fit.auth WHERE email=?"
-           /* db.query(candidate, [email],(err, result)=>{
+           db.query(candidate, [email],(err, result)=>{
                 console.log("EMAIL",email);
                 console.log("Результат выборки",result);
                 if(result.length==0){
@@ -48,35 +48,33 @@ router.post(
                     db.query(sqlInsert,[email, hashedPassword], (err, result)=>{
                         console.log("INSERT",result);
                         console.log("ERRORS", err)
-                    });*/
+                    });
                     const data = req.body.data.replace(/^data:image\/\w+;base64,/, "");
                     const buf = Buffer.from(data, 'base64')
-                    console.log("Текущая директория",__dirname+'?')
-                   // fs.writeFile(path.join(__dirname, '.../client/public/img/',req.body.fileName), buf)
-            fs.writeFile(path.join(__dirname,req.body.fileName), buf)
-                  //  console.log("КУда пишем",path.join(__dirname, '.../client/public/img/clients/',req.body.fileName))
+                    console.log("Текущая директория",__dirname)
                     const nameLen=req.body.fileName.length
                     const name=req.body.fileName.substr(0,nameLen-4)
-                    const type=req.body.fileName.substr(nameLen-3, nameLen)
+                    const type=req.body.fileName.substr(nameLen-4, nameLen)
                     const newName=name+curDate+type
                     const pathDb='/img/clients/'
+                     fs.writeFile(path.join( __dirname, '../../client/public/img/clients/',newName), buf)
                     const sqlInsertSecond="INSERT INTO fit.account_kl (FIO_cl, Phone,Age,img) VALUES (?,?,?,?);"
-                   /*db.query(sqlInsertSecond,[req.body.name, req.body.phone,dateFormat(req.body.date,"yyyy-mm-dd"), pathDb+newName], (err, result)=>{
+                   db.query(sqlInsertSecond,[req.body.name, req.body.phone,dateFormat(req.body.date,"yyyy-mm-dd"), pathDb+newName], (err, result)=>{
                         console.log("INSERT",result);
                         console.log("ERRORS", err)
-                    });*/
+                    });
                     const sqlInsertThird="INSERT INTO fit.abonpay (idclient, idabon, summ,DateActivity) VALUES ((SELECT MAX(id) FROM account_kl),?,?,?);"
-                   /* db.query(sqlInsertThird,[req.body.idabon, req.body.summ,dateFormat(req.body.active,"yyyy-mm-dd")], (err, result)=>{
+                   db.query(sqlInsertThird,[req.body.idabon, req.body.summ,dateFormat(req.body.active,"yyyy-mm-dd")], (err, result)=>{
                         console.log("INSERT",result);
                         console.log("ERRORS", err)
-                    });*/
-               // }
-               /* else{
+                    });
+                }
+               else{
                     return res.status(400).json({message: "Такой пользователь уже существует"});
-                    }*/
+                    }
 
                 res.status(201).json({message:"Пользователь создан"});
-           // });
+           });
 
         }catch (e) {
             res.status(500).json({message:"Что-то пошло не так, поробуйте снова"});

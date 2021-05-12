@@ -43,21 +43,12 @@ import DialogContent from "@material-ui/core/DialogContent";
 import DialogContentText from "@material-ui/core/DialogContentText";
 import Dialog from "@material-ui/core/Dialog";
 import BorderColorIcon from '@material-ui/icons/BorderColor';
+import { DataGrid } from '@material-ui/data-grid';
+import AccountBalanceWalletIcon from '@material-ui/icons/AccountBalanceWallet';
+import AccessTimeIcon from "@material-ui/icons/AccessTime";
+import DialogActions from "@material-ui/core/DialogActions";
 
-function Copyright() {
-    return (
-        <Typography variant="body2" color="textSecondary" align="center">
-            {'Copyright © '}
-            <Link color="inherit" href="https://material-ui.com/">
-                Your Website
-            </Link>{' '}
-            {new Date().getFullYear()}
-            {'.'}
-        </Typography>
-    );
-}
 
-let rows = []
 moment.locale('ru');
 const drawerWidth = 240;
 const formatter = new Intl.DateTimeFormat("ru", {
@@ -166,12 +157,28 @@ export const ClientPage = (props) => {
     const history = useHistory()
     const fixedHeightPaper = clsx(classes.paper, classes.fixedHeight);
     const [clientForm, setClientForm] = useState([{}])
+    const [clientsTrenForm, setClientsTrenForm] = useState([{}])
     const [adminForm, setAdminForm] = useState([{}])
     const [trenerForm, setTrenerForm] = useState([{}])
     const [payForm, setPayForm] = useState([{}])
     const [payInfo, setPayInfo] = useState([{}])
     const [payModal, setPayModal] = useState(false)
+    const [rowsClient, setRowsClient] = useState([{id:1}])
+    const [rowsAdmin, setRowsAdmin] = useState([{id:1}])
+    const [rowsTrener, setRowsTrener] = useState([{id:1}])
+    const [select, setSelect] = useState([])
 
+    const columns = [
+        { field: 'FIO_cl', headerName: 'ФИО клиента', width: 150 },
+        { field: 'nazvanie', headerName: 'Название', width: 150 },
+        { field: 'fio_trener', headerName: 'ФИО тренера', width:150 },
+        { field: 'datatime', headerName: 'Дата и время', width: 150},
+        {
+            field: 'status',
+            headerName: 'Статус',
+            width: 120,
+        },
+    ];
     const logoutHandler = event => {
         event.preventDefault()
         auth.logout()
@@ -184,30 +191,18 @@ export const ClientPage = (props) => {
     const handleDrawerClose = () => {
         setOpen(false);
     };
-
-    const handleClickOpenPay = async (card) => {
+    const handleModalPayOpen = () => {
         setPayModal(true);
-        console.log("idpt", card)
-        try {
-            const fetched = await request(`/api/tablepay/payinfo/${curId}`, 'POST', {card}, {Authorization: `Bearer ${token}`})
-            console.log("PayInfo", fetched)
-            setPayInfo(fetched.result)
-            ptPay(fetched.result)
-
-        } catch (e) {
-            console.log("Ошибка", e)
-        }
-    }
-
-    const handleClosePay = () => {
+    };
+    const handleModalPayСlose = () => {
         setPayModal(false);
     };
 
-
-    const submitTren = async (card, statusNew) => {
+    const submitTren = async (id, statusNew) => {
+        console.log("card", id)
         try {
             const fetched = await request(`/api/client/clientPage/admin/updating/${curId}`, 'POST', {
-                ...card,
+                id,
                 statusNew
             }, {Authorization: `Bearer ${token}`})
             console.log("", fetched)
@@ -232,15 +227,32 @@ export const ClientPage = (props) => {
             const fetched = await request(`/api/client/clientPage/client/${curId}`, 'GET', null, {
                 Authorization: `Bearer ${token}`
             })
+            console.log('ИНформация о пользователе', fetched.result)
             setClientForm(fetched.result)
         } catch (e) {
             console.log(e)
         }
     }, [request, token, curId])
+
+    const clientsTren = useCallback(async () => {
+        try {
+            const fetched = await request(`/api/client/clientPage/clientstren/${curId}`, 'GET', null, {
+                Authorization: `Bearer ${token}`
+            })
+            console.log('ИНформация о пользователе111', fetched.result)
+            setRowsClient(fetched.result)
+            //setClientsTrenForm(fetched.result)
+        } catch (e) {
+            console.log(e)
+        }
+    }, [request, token, curId])
+
     const admin = useCallback(async () => {
         try {
             const fetched = await request(`/api/client/clientPage/admin/${curId}`, 'GET', null, {Authorization: `Bearer ${token}`})
-            setAdminForm(fetched.result)
+           // setAdminForm(fetched.result)
+            setRowsAdmin(fetched.result)
+            console.log("!!!",adminForm)
         } catch (e) {
             console.log(e)
         }
@@ -248,52 +260,31 @@ export const ClientPage = (props) => {
     const trener = useCallback(async () => {
         try {
             const fetched = await request(`/api/client/clientPage/trener/${curId}`, 'GET', null, {Authorization: `Bearer ${token}`})
-            setTrenerForm(fetched.result)
+            setRowsTrener(fetched.result)
+            //setTrenerForm(fetched.result)
         } catch (e) {
             console.log(e)
         }
     }, [request, token, curId])
-    const payTable = useCallback(async () => {
-        try {
-            const fetched = await request(`/api/tablepay/tablepay/${curId}`, 'GET', null, {Authorization: `Bearer ${token}`})
-            console.log("Fetched", fetched)
-            setPayForm(fetched.result)
-
-        } catch (e) {
-        }
-    }, [request, token, curId])
-
-    const ptPay = async (card) => {
-        console.log("PTPay", card)
-        try {
-            const fetched = await request(`/api/tablepay/insertinfo/${curId}`, 'POST', {...card}, {Authorization: `Bearer ${token}`})
-            console.log("Fetched", fetched)
-        } catch (e) {
-            console.log("Ошибка", e)
-        }
-    }
 
 
-    useEffect(() => {
-        payTable()
-    }, [])
+        useEffect(() => {
+            admin()
+            console.log("AdminForm", adminForm)
+        }, [])
+        useEffect(() => {
+            trener()
+        }, [])
+        useEffect(() => {
+            client()
+            clientsTren()
+        }, [])
 
-    useEffect(() => {
-        client()
-    }, [])
-    useEffect(() => {
-        admin()
-        console.log("AdminForm", adminForm)
-    }, [])
-    useEffect(() => {
-        trener()
-    }, [])
     if (loading) {
         return <Loader/>
     }
 console.log("PayInfo", payInfo)
     return (
-        <>
             <div className={classes.root}>
                 <CssBaseline/>
                 <AppBar position="absolute" className={clsx(classes.appBar, open && classes.appBarShift)}>
@@ -348,25 +339,44 @@ console.log("PayInfo", payInfo)
                     </div>
                     <Divider/>
                     <List>
-                        <ListItem button component={Link} to="/abonpay">
+                        <ListItem button component={Link} to="/longingabon">
                         <ListItemIcon>
                             <FaceIcon/>
                         </ListItemIcon>
                         <ListItemText primary="Продлить абонемент"/>
                     </ListItem>
-                        <ListItem button component={Link} to="/noutingpt">
+                        <ListItem button component={Link} to="/offlinepay">
                             <ListItemIcon>
-                                <FitnessCenterIcon/>
+                                <AccountBalanceWalletIcon />
                             </ListItemIcon>
-                            <ListItemText primary="Записаться"/>
+                            <ListItemText primary="Оплатить"/>
                         </ListItem>
+                        {curRole=='cl' && (
+                            <>
+                            <ListItem button component={Link} to="/noutingpt">
+                                <ListItemIcon>
+                                    <FitnessCenterIcon/>
+                                </ListItemIcon>
+                                <ListItemText primary="Записаться"/>
+                            </ListItem>
+                            </>
+                        )}
                         {curRole=='admin' && (
+                            <>
                         <ListItem button component={Link} to="/registration">
                             <ListItemIcon>
                                 <BorderColorIcon/>
                             </ListItemIcon>
                             <ListItemText primary="Зарегестрировать"/>
                         </ListItem>
+
+                            <ListItem button component={Link} to="/nout">
+                            <ListItemIcon>
+                            <BorderColorIcon/>
+                            </ListItemIcon>
+                            <ListItemText primary="Запись"/>
+                            </ListItem>
+                        </>
                         )}
                     </List>
                     <Divider/>
@@ -390,117 +400,84 @@ console.log("PayInfo", payInfo)
                             {/* Chart */}
                             <Grid item xs={12} md={8} lg={9}>
                                 {loading && <Loader/>}
-                                {!loading && (adminForm.length != 0 || clientForm.length != 0) && (
-                                    <>
+                                {!loading && (rowsAdmin.length > 1 || rowsClient.length >1 || rowsTrener.length>1) && (
                                         <Paper className={fixedHeightPaper}>
                                             <TableContainer component={Paper}>
                                                 <Table className={classes.table} size="small"
                                                        aria-label="a dense table">
-                                                    {curRole == 'admin' && (
+                                                    {curRole == 'admin' && rowsAdmin.length >1 && (
+                                                        <div>
+                                                            <div style={{height: 400, width: '100%'}}>
+                                                                    <DataGrid rows={rowsAdmin} columns={columns}
+                                                                              pageSize={5} checkboxSelection onRowSelected={(x) => setSelect(x.data.id)}/>
+                                                        </div>
+                                                            <div align="right">
+                                                                <Button onClick={()=>submitTren(select, "yes")}>Подтвердить</Button>
+                                                                <Button onClick={()=>submitTren(select, "no")}>Отменить</Button>
+                                                            </div>
+                                                        </div>
+                                                        )}
+                                                    {curRole == 'cl' && rowsClient.length>1 && (
                                                         <>
-                                                            <TableHead>
-                                                                <TableRow>
-                                                                    <TableCell align="center">ФИО клиента</TableCell>
-                                                                    <TableCell align="center">Название</TableCell>
-                                                                    <TableCell align="center">Дата и время</TableCell>
-                                                                    <TableCell align="center">Тренер</TableCell>
-                                                                    <TableCell align="center">Статус</TableCell>
-                                                                    <TableCell align="center">Подтвердить</TableCell>
-                                                                    <TableCell align="center">Отменить</TableCell>
-                                                                </TableRow>
-                                                            </TableHead>
-                                                            <TableBody>
-
-                                                                {adminForm.map((row, index) => (
-                                                                    <TableRow key={row.nazvanie}>
-
-                                                                        <TableCell
-                                                                            align="center">{row.FIO_cl}</TableCell>
-                                                                        <TableCell align="center">{row.nazvanie}</TableCell>
-                                                                        <TableCell align="center">
-                                                                            {moment(row.datatime).format('LLLL')}</TableCell>
-                                                                        <TableCell
-                                                                            align="center">{row.fio_trener}</TableCell>
-                                                                        <TableCell
-                                                                            align="center">{row.status}</TableCell>
-                                                                        <TableCell align="center"><CheckIcon
-                                                                            onClick={() => submitTren(adminForm[index], "yes")}/></TableCell>
-                                                                        <TableCell align="center"><CloseIcon
-                                                                            onClick={() => submitTren(adminForm[index], "no")}/></TableCell>
-
-                                                                    </TableRow>
-                                                                ))}
-                                                            </TableBody>
+                                                            <div align="right">
+                                                                <div align="right">
+                                                                    <Button onClick={handleModalPayOpen}>Оплатить</Button>
+                                                                </div>
+                                                                <Dialog
+                                                                    open={payModal}
+                                                                    keepMounted
+                                                                    onClose={handleModalPayСlose}
+                                                                    aria-labelledby="alert-dialog-slide-title"
+                                                                    aria-describedby="alert-dialog-slide-description"
+                                                                >
+                                                                    <DialogTitle id="alert-dialog-slide-title">Оплата персональной тренировки</DialogTitle>
+                                                                    <DialogContent>
+                                                                        <PayForm />
+                                                                    </DialogContent>
+                                                                    <DialogActions>
+                                                                        <Button onClick={handleModalPayСlose} color="primary">
+                                                                            Позже
+                                                                        </Button>
+                                                                    </DialogActions>
+                                                                 </Dialog>
+                                                            </div>
+                                                            <div style={{height: 400, width: '100%'}}>
+                                                                <DataGrid rows={rowsClient} columns={[
+                                                                    { field: 'fio_trener', headerName: 'ФИО тренера', width: 150 },
+                                                                    { field: 'nazvanie', headerName: 'Название', width: 150 },
+                                                                    { field: 'datatime', headerName: 'Дата и время', width: 150},
+                                                                    { field: 'status', headerName: 'Статус', width: 120,},
+                                                                    { field: 'oplacheno', headerName: 'Оплачено', width: 120,},
+                                                                    { field: 'sumkoplate', headerName: 'Сумма к оплате', width: 120,},]}
+                                                                          pageSize={5} checkboxSelection onRowSelected={(x) => setSelect(x.data.id)}/>
+                                                            </div>
+                                                            <div align="right">
+                                                                <Button onClick={()=>submitTren(select, "yes")}>Подтвердить</Button>
+                                                                <Button onClick={()=>submitTren(select, "no")}>Отменить</Button>
+                                                            </div>
 
                                                         </>
                                                     )}
-                                                    {curRole == 'cl' && (
+                                                    {curRole == 'tren' && rowsTrener.length>1 && (
                                                         <>
-                                                            <TableHead>
-                                                                <TableRow>
-                                                                    <TableCell align="center">Название</TableCell>
-                                                                    <TableCell align="center">Дата и время</TableCell>
-                                                                    <TableCell align="center">Тренер</TableCell>
-                                                                    <TableCell align="center">Статус</TableCell>
-                                                                </TableRow>
-                                                            </TableHead>
-                                                            <TableBody>
-                                                                {clientForm.map((row) => (
-                                                                    <TableRow key={row.nazvanie}>
-                                                                        <TableCell align="center">{row.nazvanie}</TableCell>
-                                                                        <TableCell align="center">
-                                                                            {moment(row.datatime).format('LLLL')}</TableCell>
-                                                                        <TableCell
-                                                                            align="center">{row.fio_trener}</TableCell>
-                                                                        <TableCell
-                                                                            align="center">{row.status}</TableCell>
-                                                                    </TableRow>
-                                                                ))}
-                                                            </TableBody>
-
-                                                        </>
-                                                    )}
-                                                    {curRole == 'tren' && (
-                                                        <>
-                                                            <TableHead>
-                                                                <TableRow>
-                                                                    <TableCell align="center">ФИО клиента</TableCell>
-                                                                    <TableCell align="center">Название</TableCell>
-                                                                    <TableCell align="center">Дата и время</TableCell>
-                                                                    <TableCell align="center">Тренер</TableCell>
-                                                                    <TableCell align="center">Статус</TableCell>
-                                                                    <TableCell align="center">Подтвердить</TableCell>
-                                                                    <TableCell align="center">Отменить</TableCell>
-                                                                </TableRow>
-                                                            </TableHead>
-                                                            <TableBody>
-
-                                                                {trenerForm.map((row, index) => (
-                                                                    <TableRow key={row.nazvanie}>
-
-                                                                        <TableCell
-                                                                            align="center">{row.FIO_cl}</TableCell>
-                                                                        <TableCell align="center">{row.name}</TableCell>
-                                                                        <TableCell align="center">
-                                                                            {moment(row.datatime).format('LLLL')}</TableCell>
-                                                                        <TableCell
-                                                                            align="center">{row.fio_trener}</TableCell>
-                                                                        <TableCell
-                                                                            align="center">{row.status}</TableCell>
-                                                                        <TableCell align="center"><CheckIcon
-                                                                            onClick={() => submitTren(trenerForm[index], "yes")}/></TableCell>
-                                                                        <TableCell align="center"><CloseIcon
-                                                                            onClick={() => submitTren(trenerForm[index], "no")}/></TableCell>
-
-                                                                    </TableRow>
-                                                                ))}
-                                                            </TableBody>
+                                                            <div style={{height: 400, width: '100%'}}>
+                                                                <DataGrid rows={rowsTrener} columns={[
+                                                                    { field: 'FIO_cl', headerName: 'ФИО клиента', width: 150 },
+                                                                    { field: 'nazvanie', headerName: 'Название', width: 150 },
+                                                                    { field: 'datatime', headerName: 'Дата и время', width: 150},
+                                                                    { field: 'status', headerName: 'Статус', width: 120,},
+                                                                   ]}
+                                                                          pageSize={5} checkboxSelection onRowSelected={(x) => setSelect(x.data.id)}/>
+                                                            </div>
+                                                            <div align="right">
+                                                                <Button onClick={()=>submitTren(select, "yes")}>Подтвердить</Button>
+                                                                <Button onClick={()=>submitTren(select, "no")}>Отменить</Button>
+                                                            </div>
                                                         </>
                                                     )}
                                                 </Table>
                                             </TableContainer>
                                         </Paper>
-                                    </>
                                 )}
                             </Grid>
                             {/* Recent Orders */}
@@ -512,59 +489,6 @@ console.log("PayInfo", payInfo)
 
                                         </>
                                     )}
-                                    {curRole == 'cl' && (
-                                        <>
-                                        <Paper className={fixedHeightPaper}>
-                                            <TableContainer component={Paper}>
-                                                <Table className={classes.table} size="small"
-                                                       aria-label="a dense table">
-                                                    <TableHead>
-                                                        <TableRow>
-                                                            <TableCell align="center">Название</TableCell>
-                                                            <TableCell align="center">Тренер</TableCell>
-                                                            <TableCell align="center">Дата и время</TableCell>
-                                                            <TableCell align="center">Статус оплаты</TableCell>
-                                                            <TableCell align="center">Оплатить</TableCell>
-                                                        </TableRow>
-                                                    </TableHead>
-                                                    <TableBody>
-                                                        {payForm.map((row, index) => (
-                                                            <TableRow key={row.name}>
-                                                                <TableCell align="center">{row.nazvanie}</TableCell>
-                                                                <TableCell
-                                                                    align="center">{row.fio_trener}</TableCell>
-                                                                <TableCell align="center">
-                                                                    {moment(row.datatime).format('LLLL')}</TableCell>
-                                                                <TableCell
-                                                                    align="center">no</TableCell>
-                                                                <TableCell align="center">
-                                                                   <Button
-                                                                       color="inherit"
-                                                                       align="center"
-                                                                       startIcon={<CheckIcon align="center"/>}
-                                                                       onClick={()=>handleClickOpenPay(payForm[index].idpt)}
-                                                                       >Оплатить</Button>
-                                                                    <Dialog
-                                                                        open={payModal}
-                                                                        onClose={handleClosePay}
-                                                                        aria-labelledby="responsive-dialog-title"
-                                                                    >
-                                                                        <DialogTitle id="responsive-dialog-title">{"Выберите подходящий способ оплаты"}</DialogTitle>
-                                                                        <DialogContent>
-                                                                            <DialogContentText>
-                                                                                <PayForm type={"Оплата персональной тренировки"} sum={payInfo[0].sum}/>
-                                                                            </DialogContentText>
-                                                                        </DialogContent>
-                                                                    </Dialog>
-                                                                </TableCell>
-                                                            </TableRow>
-                                                        ))}
-                                                    </TableBody>
-                                                </Table>
-                                            </TableContainer>
-                                        </Paper>
-                                        </>
-                                    )}
 
                                 </Paper>
                             </Grid>
@@ -572,40 +496,7 @@ console.log("PayInfo", payInfo)
                             {curRole == 'admin' && (
                             <>
                             <Paper className={fixedHeightPaper}>
-                                <TableContainer component={Paper}>
-                                    <Table className={classes.table} size="small"
-                                           aria-label="a dense table">
-                                        <TableHead>
-                                            <TableRow>
-                                                <TableCell align="center">Сотрудник</TableCell>
-                                                <TableCell align="center">Уровень доступа</TableCell>
-                                                <TableCell align="center">Изменить уровень прав</TableCell>
-                                                <TableCell align="center">Подтвердить</TableCell>
-                                            </TableRow>
-                                        </TableHead>
-                                        <TableBody>
-                                            {payForm.map((row) => (
-                                                <TableRow key={row.name}>
-                                                    <TableCell align="center">{row.nazvanie}</TableCell>
-                                                    <TableCell
-                                                        align="center">{row.fio_trener}</TableCell>
-                                                    <TableCell align="center">
-                                                        {moment(row.datatime).format('LLLL')}</TableCell>
-                                                    <TableCell
-                                                        align="center">no</TableCell>
-                                                    <TableCell align="center">
-                                                        <Button
-                                                            component={Link} to="/pay"
-                                                            color="inherit"
-                                                            align="center"
-                                                            startIcon={<CheckIcon align="center"/>}
-                                                        >Оплатить</Button>
-                                                    </TableCell>
-                                                </TableRow>
-                                            ))}
-                                        </TableBody>
-                                    </Table>
-                                </TableContainer>
+
                             </Paper>
                             </>
                             )}
@@ -613,7 +504,6 @@ console.log("PayInfo", payInfo)
                 </main>
 
             </div>
-        </>
 
     );
 }

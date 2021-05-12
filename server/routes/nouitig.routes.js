@@ -5,7 +5,9 @@ const auth = require('../middlewear/auth.middlewear')
 const db = require('../config/db.conn')
 const mailer=require('../config/nodemailer')
 
+let idpt=0
 // /api/nouting/noutigpt
+
 router.get(
     '/noutingpt/:id',auth,
     async (req, res) => {
@@ -27,19 +29,20 @@ router.post(
     '/inserting/:id',auth,
     async (req, res)=>{
         console.log("Email Нужный",req.body.curEmail);
-        let values=[+req.params.id,req.body.idtrener,dateFormat(req.body.selectedDate,"yyyy-mm-dd HH:MM:ss"),req.body.nazvanie]
-        try{
+        let values=[+req.params.id,req.body.idtrener,dateFormat(req.body.selectedDate,"yyyy-mm-dd HH:MM:ss"),req.body.idzanytie]
+        try {
             console.log("values", values)
-            const insertPt="INSERT INTO fit.personaltren(idclent, idtrener, datatime,name) VALUES (?,?,?,?);"
-            db.query(insertPt, values,(err, result)=>{
-                console.log("Error",err)
-                console.log("Результат выборки",result);
+            const insertPt = "INSERT INTO fit.personaltren(idclent, idtrener, datatime, idzan) VALUES (?,?,?,?);"
+            db.query(insertPt, values, (err, result) => {
+                console.log("Error", err)
+                console.log("Результат выборки", result);
                 res.json({result});
-                const message={
+                idpt=result.insertId
+                const message = {
                     to: req.body.curEmail,
                     subject: 'Запись на персональную тренировку прошшла успешно!',
                     text: `Вы запилсаись на персональную тренировку ${req.body.nazvanie} 
-                    ${dateFormat(req.body.selectedDate,"yyyy-mm-dd HH:MM:ss")}
+                    ${dateFormat(req.body.selectedDate, "yyyy-mm-dd HH:MM:ss")}
                     Хорошего дня!`
 
                 }
@@ -47,9 +50,25 @@ router.post(
 
             });
         }
-           catch (e) {
-               return res.status(400).json({message:'Ответил'})
-           }
+        catch (e) {
+            return res.status(400).json({message:'Ответил'})
+        }
+
+
+        router.post(
+            '/insertingtwo/:id',
+            async (req, res)=> {
+                try {
+                    const insertPay = "INSERT INTO fit.paypersonaltren(idclient, idtrener, idtrenerovki) VALUES (?,?,?);"
+                    db.query(insertPay, [+req.params.id, req.body.idtrener, idpt], (err, result) => {
+                        console.log("Error", err)
+                        console.log("Результат выборки", result);
+                    });
+                } catch (e) {
+                    return res.status(400).json({message: 'Ответил'})
+                }
+            }
+        )
 
 
 
