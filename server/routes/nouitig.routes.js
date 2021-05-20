@@ -9,7 +9,7 @@ let idpt=0
 // /api/nouting/noutigpt
 
 router.get(
-    '/noutingpt/:id',auth,
+    '/noutingpt',
     async (req, res) => {
         try{
                 const trenerovki=`SELECT zanytie.idzanytie,zanytie.nazvanie,zanytie.opisanie,DATE_FORMAT(zanytie.datetime,'%Y-%m-%d %H:%i') AS datetime,zanytie.opisaniepodrobno, trenersdata.FIO_cl as fio_trener, trener.idtrener, zanytie.img 
@@ -76,7 +76,7 @@ router.post(
 )
 
 router.post(
-    '/selecttrenerpt/:id',auth,
+    '/selecttrenerpt',
     async (req, res) => {
         let date=dateFormat(req.body.selectedDate,"yyyy-mm-dd HH:MM")
         let values=+req.body.idtrener
@@ -93,5 +93,23 @@ router.post(
         }catch (e) {
             res.status(500).json({message:"Что-то пошло не так, поробуйте снова"});
         }
+    })
+
+router.get(
+    '/selectsum',
+    async (req, res) => {
+        try{
+            const trenerovki=`SELECT zanytie.idzanytie,zanytie.nazvanie,zanytie.opisanie,DATE_FORMAT(zanytie.datetime,'%Y-%m-%d %H:%i') AS datetime,zanytie.opisaniepodrobno, trenersdata.FIO_cl as fio_trener, trener.idtrener, zanytie.img 
+FROM fit.zanytie JOIN fit.trener ON fit.zanytie.idtrenera=fit.trener.idtrener
+JOIN fit.account_kl AS trenersdata ON trenersdata.id=trener.idtrener;`
+            db.query(trenerovki, [],(err, result)=>{
+                console.log("Error",err)
+                console.log("Результат выборки",result);
+                res.json({result});
+            });
+        }catch (e) {
+            res.status(500).json({message:"Что-то пошло не так, поробуйте снова"});
+        }
+
     })
 module.exports=router

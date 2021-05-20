@@ -74,7 +74,6 @@ export const PayInfo = (props) => {
     const [op, setop]=useState(1)
 
     const handleChangeClient = (event) => {
-        fl=true
         setcl(event.target.value);
     };
     const handleChangeOplata = (event) => {

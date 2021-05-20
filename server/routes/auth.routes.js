@@ -73,11 +73,11 @@ router.post(
                     return res.status(400).json({message: "Такой пользователь уже существует"});
                     }
 
-                res.status(201).json({message:"Пользователь создан"});
+               return res.status(201).json({message:"Пользователь создан"});
            });
 
         }catch (e) {
-            res.status(500).json({message:"Что-то пошло не так, поробуйте снова"});
+            return  res.status(500).json({message:"Что-то пошло не так, поробуйте снова"});
         }
 
     })
@@ -127,7 +127,7 @@ router.post('/login',
 
 
         }catch (e) {
-            res.status(500).json({message:"Что-то пошло не так, поробуйте снова"});
+            return res.status(500).json({message:"Что-то пошло не так, поробуйте снова"});
         }
 
 

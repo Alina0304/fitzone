@@ -112,4 +112,61 @@ console.log("Обработка запроса", req.body)
 
     }
 )
+router.get(
+    '/clientPage/roles',
+    async (req, res)=>{
+        try{
+            console.log("Обработка запроса", req.body)
+            const allRoles=`SELECT auth.idauth AS id,account_kl.FIO_cl, auth.email, auth.role FROM auth
+JOIN account_kl ON auth.idauth=account_kl.id;;`
+            db.query(allRoles, [],(err, result)=>{
+                res.json({result});
+            });
+        }
+        catch (e) {
+            return res.status(400).json({message:'Ответил'})
+        }
+
+    }
+)
+router.post(
+    '/clientPage/roles/change',
+    async (req, res)=>{
+        console.log('roles', req.body)
+        try{
+            const updateRole=`UPDATE auth SET role=? WHERE idauth=?;`
+            db.query(updateRole, [req.body.newRole,req.body.id],(err, result)=>{
+                res.json({result});
+            });
+        }
+        catch (e) {
+            return res.status(400).json({message:'Ответил'})
+        }
+
+    }
+)
+router.get(
+    '/clientPage/allclientsinfo',
+    async (req, res)=>{
+        try{
+            const allClInfo=` SELECT account_kl.id, account_kl.FIO_cl, account_kl.Age, 
+ account_kl.Phone, abonement.type, aboninfo.srok, abonpay.Activity, DATE_FORMAT(abonpay.DateActivity,'%d.%m.%Y') AS DateActivity,
+  DATE_FORMAT(DATE_ADD(abonpay.DateActivity, INTERVAL srok DAY),'%d.%m.%Y') AS endOfActivity FROM account_kl JOIN abonpay 
+  ON abonpay.idclient=account_kl.id 
+ JOIN aboninfo ON abonpay.idabon=aboninfo.id 
+ JOIN auth ON account_kl.id=auth.idauth
+ JOIN abonement ON aboninfo.idtype=abonement.id
+ WHERE role='cl';`
+            db.query(allClInfo, [],(err, result)=>{
+                res.json({result});
+            });
+        }
+        catch (e) {
+            console.log(e)
+            return res.status(500).json({message:"Что-то пошло не так, поробуйте снова"});
+        }
+
+    }
+)
+
 module.exports=router

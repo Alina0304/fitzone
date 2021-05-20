@@ -12,6 +12,7 @@ const router=Router()
 let resetId=null
 router.post('/inputemail',
     async (req, res) => {
+    console.log('EMAIL', req.body.email)
         try{
             let token = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
             const authSelect='SELECT idauth,email FROM fit.auth WHERE email=?'

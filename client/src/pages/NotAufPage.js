@@ -12,7 +12,7 @@ import {
     Toolbar,
     Typography
 } from "@material-ui/core";
-import ChatBot from 'react-simple-chatbot';
+import {ChatBotComponent} from '../components/ChatBot';
 import Button from "@material-ui/core/Button";
 import {makeStyles, useTheme} from "@material-ui/core/styles";
 import {Link} from "react-router-dom";
@@ -30,6 +30,7 @@ import MobileStepper from '@material-ui/core/MobileStepper';
 import {Loader} from "../components/Loader";
 import Slide from '@material-ui/core/Slide';
 import Avatar from "@material-ui/core/Avatar";
+import {GoogleMap} from "../components/GoogleMaps";
 
 
 moment.lang('ru');
@@ -59,6 +60,9 @@ const useStyles = makeStyles((theme) => ({
         position: "relative",
         color: theme.palette.common.white,
         marginBottom: theme.spacing(4),
+        height: theme.spacing (28),
+        padding: theme.spacing(40),
+        width: "auto",
         backgroundImage: 'url(img/slid.jpg)',
         backgroundSize: "cover",
         backgroundRepeat: "no-repeat",
@@ -74,7 +78,7 @@ const useStyles = makeStyles((theme) => ({
         backgroundOverlay: "rgba(0,0,0,0,.3)"
     },
     mainFeaturesPostContent: {
-        position: "centre",
+        // position: "centre",
         padding: theme.spacing(40),
         marginTop: theme.spacing(8)
 
@@ -122,7 +126,27 @@ const useStyles = makeStyles((theme) => ({
     buttonPadding: {
         margin: "20px",
     },
-
+    layout: {
+        width: 'auto',
+        marginLeft: theme.spacing(2),
+        marginTop: theme.spacing(30),
+        marginRight: theme.spacing(2),
+        [theme.breakpoints.up(600 + theme.spacing(2) * 2)]: {
+            width: 600,
+            marginLeft: 'auto',
+            marginRight: 'auto',
+        },
+    },
+    paper: {
+        marginTop: theme.spacing(3),
+        marginBottom: theme.spacing(3),
+        padding: theme.spacing(2),
+        [theme.breakpoints.up(600 + theme.spacing(3) * 2)]: {
+            marginTop: theme.spacing(6),
+            marginBottom: theme.spacing(6),
+            padding: theme.spacing(3),
+        },
+    },
 
 }))
 const Transition = React.forwardRef(function Transition(props, ref) {
@@ -159,39 +183,7 @@ export const NotAufPage = () => {
     const sleep = (milliseconds) => {
         return new Promise(resolve => setTimeout(resolve, milliseconds))
     }
-    const steps = [
-        {
-            id: '1',
-            message: 'Привет! Чем я могу тебе помочь?',
-            trigger: '2',
-        },
-        {
-            id: '2',
-            options: [
-                { value: 1, label: 'Узнать расписание', trigger: '3' },
-                { value: 2, label: 'Как стать клиетом фитнес-клуба?', trigger: '4' },
-                { value: 3, label: 'Какие тренировки есть?', trigger: '5' },
-            ],
-        },
-        {
-            id: '3',
-            message: 'Мы работаем: Пн-Пт: 8:00-23:00, Сб-Вс: 9:00-21:00',
-            trigger: '2',
-        },
-        {
-            id: '4',
-            message: 'Оставьте нам заявку на сайте, свяжитесь с нами в соц-сетях или позвоните по номеру: +********* наш менеджер свяжется с Вами!',
-            trigger: "2",
-        },
-        {
-            id: '5',
-            message: 'Список наших тренировок: ',
-            component: (
-                    <div> {infoFormTrener.map((card) => (<Typography> variant="h4">{card.nazvanie}</Typography>))}</div>
-            ),
-            trigger: "2",
-        },
-    ];
+
     const info = useCallback(async () => {
         try {
             const fetched = await request('/api/notauf/fitzone', 'GET', null, {})
@@ -248,14 +240,14 @@ export const NotAufPage = () => {
                         <div className={classes.overlay}/>
                         <Grid container>
                             <Grid item md={6}>
-                                <div className={classes.mainFeaturesPostContent}>
+                                {/*<div className={classes.mainFeaturesPostContent}>*/}
                                     <Typography
                                         component="h1"
                                         variant="h3"
                                         color='inherit'
                                         gutterBottom
                                     >
-                                        Fitness
+                                        FitZone
                                     </Typography>
                                     <Typography
 
@@ -263,9 +255,17 @@ export const NotAufPage = () => {
                                         color='inherit'
                                         paragraph
                                     >
-                                        Lorem ipsum
+                                       Сеть фитнес-клубов №1
                                     </Typography>
-                                </div>
+                                    <Typography
+
+                                        variant='h5'
+                                        color='inherit'
+                                        paragraph
+                                    >
+                                        Выбирая нас вы выбираете лучшее для себя и свеого здоровья!
+                                    </Typography>
+                                {/*</div>*/}
                             </Grid>
                         </Grid>
                     </Container>
@@ -416,13 +416,51 @@ export const NotAufPage = () => {
                         }
                     </Grid>
                 </Container>
-            </main>
+                    <Paper className={classes.paper}>
+                        <Grid container spacing={3}>
+                            <Grid item xs={12} md={6}>
+                            <GoogleMap/>
+                            </Grid>
+                            <Grid item xs={12} md={6}>
+                                <div align="right">
+                                <Typography variant="h3" gutterBottom>
+                                    Где мы находимся?
+                                </Typography>
+                                    <Typography variant="h5" gutterBottom>
+                                        Фитнес-клуб располагается в центре города по адресу:
+                                    </Typography>
+                                    <Typography variant="h5" gutterBottom>
+                                        г.Воронеж, площадь Университетская, 1
+                                    </Typography>
+                                    <Typography variant="h5" gutterBottom>
+                                    Часы работы:
+                                </Typography>
+                                <Typography variant="h5" gutterBottom>
+                                   Понедельник-пятница: 8:00-23:00
+                                </Typography>
+                                    <Typography variant="h5" gutterBottom>
+                                        Выходные и праздничные дни: 9:00-21:00
+                                    </Typography>
+                                    <Typography variant="h1" gutterBottom>
+
+                                    </Typography>
+                                    <Typography variant="h3" gutterBottom>
+                                        Как с нами связаться?
+                                    </Typography>
+                                    <Typography variant="h5" gutterBottom>
+                                        телефон: +79805409223
+                                    </Typography>
+                                    <Typography variant="h5" gutterBottom>
+                                        эл. почта: fitzone.sender@ya.com
+                                    </Typography>
+                                </div>
+                            </Grid>
+                        </Grid>
+                    </Paper>
             <div align="right">
-                <ChatBot
-                    headerTitle="Speech Recognition"
-                    recognitionEnable={true}
-                    steps={steps}/>
+                <ChatBotComponent />
             </div>
+            </main>
         </>
     );
 

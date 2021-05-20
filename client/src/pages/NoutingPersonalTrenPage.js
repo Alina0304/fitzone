@@ -137,7 +137,7 @@ export const NoutingPersonalTrenPage = (props) =>{
         setState({openModal:true,stationNumber: stationNumber});
        try {
            console.log("ТУТТ")
-            const fetched = await request(`/api/nouting/selecttrenerpt/${curId}`, 'POST',{...card,selectedDate},{Authorization: `Bearer ${token}`})
+            const fetched = await request(`/api/nouting/selecttrenerpt`, 'POST',{...card,selectedDate},{Authorization: `Bearer ${token}`})
             console.log("Поймали",fetched)
            if (fetched.resultCount>0)
                setResultCount(false);
@@ -173,7 +173,7 @@ export const NoutingPersonalTrenPage = (props) =>{
     const nouting = useCallback(async () => {
         console.log("Before try")
         try {
-            const fetched = await request(`/api/nouting/noutingpt/${curId}`, 'GET', null, {
+            const fetched = await request(`/api/nouting/noutingpt`, 'GET', null, {
                 Authorization: `Bearer ${token}`
             })
             console.log("Fetched",fetched)

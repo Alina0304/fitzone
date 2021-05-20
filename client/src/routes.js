@@ -12,6 +12,7 @@ import {ResetPageNewPassword} from "./pages/ResetPageNewPassword";
 import {LongingAbonPage} from "./pages/LongingAbonPage";
 import {RegistrationPage} from "./pages/RegistrationPage";
 import {PayInfo} from "./pages/PayInfo";
+import {NoutPage} from "./pages/NoutPage";
 
 
 export const useRoutes = isAuthenticated =>{
@@ -75,6 +76,9 @@ export const useRoutes = isAuthenticated =>{
                             <PayInfo role={value.role} userId={value.userId}/>
                         }
                     </AuthContext.Consumer>
+                </Route>
+                <Route path="/nout" exact>
+                    <NoutPage />
                 </Route>
             </Switch>
         )

@@ -40,7 +40,10 @@ const useStyles = makeStyles((theme)=>({
         position: "relative",
         color: theme.palette.common.white,
         marginBottom: theme.spacing(4),
-        backgroundImage: 'url(img/slid.jpg)',
+        height: theme.spacing (15),
+        padding: theme.spacing(8),
+        width: "auto",
+        backgroundImage: 'url(img/trenerspage.jpg)',
         backgroundSize: "cover",
         backgroundRepeat: "no-repeat",
         backgroundPosition: "centre"
@@ -55,8 +58,7 @@ const useStyles = makeStyles((theme)=>({
         backgroundOverlay: "rgba(0,0,0,0,.3)"
     },
     mainFeaturesPostContent: {
-        position: "centre",
-        padding: theme.spacing(40),
+        padding: theme.spacing(6),
         marginTop: theme.spacing(8)
 
     },
@@ -187,14 +189,13 @@ export const TrenersPage = (props) => {
                     <div className={classes.overlay}/>
                     <Grid container>
                         <Grid item md={6}>
-                            <div className={classes.mainFeaturesPostContent}>
                                 <Typography
                                     component="h1"
                                     variant="h3"
                                     color='inherit'
                                     gutterBottom
                                 >
-                                    Fitness
+                                    FitZone
                                 </Typography>
                                 <Typography
 
@@ -202,12 +203,8 @@ export const TrenersPage = (props) => {
                                     color='inherit'
                                     paragraph
                                 >
-                                    Lorem ipsum
+                                    Рядом с Вами всегда профессионалы!
                                 </Typography>
-                                <Button variant="contained" color='secondary'>
-                                    Learn more
-                                </Button>
-                            </div>
                         </Grid>
                     </Grid>
                 </Container>

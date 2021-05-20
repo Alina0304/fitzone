@@ -35,7 +35,7 @@ import TableCell from '@material-ui/core/TableCell';
 import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
-import {Card, CardMedia} from "@material-ui/core";
+import {Card, CardActions, CardMedia} from "@material-ui/core";
 import {Diagram} from "../components/Diagram";
 import {PayForm} from "../components/PayForm";
 import DialogTitle from "@material-ui/core/DialogTitle";
@@ -47,6 +47,12 @@ import { DataGrid } from '@material-ui/data-grid';
 import AccountBalanceWalletIcon from '@material-ui/icons/AccountBalanceWallet';
 import AccessTimeIcon from "@material-ui/icons/AccessTime";
 import DialogActions from "@material-ui/core/DialogActions";
+import Avatar from "@material-ui/core/Avatar";
+import PersonIcon from "@material-ui/icons/Person";
+import ScheduleIcon from "@material-ui/icons/Schedule";
+import TextField from "@material-ui/core/TextField";
+import FormHelperText from "@material-ui/core/FormHelperText";
+import NativeSelect from "@material-ui/core/NativeSelect";
 
 
 moment.locale('ru');
@@ -144,6 +150,27 @@ const useStyles = makeStyles((theme) => ({
     table: {
         minWidth: 650,
     },
+    layout: {
+        width: 'auto',
+        marginLeft: theme.spacing(2),
+        marginTop: theme.spacing(3),
+        marginRight: theme.spacing(2),
+        [theme.breakpoints.up(600 + theme.spacing(2) * 2)]: {
+            width: 500,
+            marginLeft: 'auto',
+            marginRight: 'auto',
+        },
+    },
+    paperModal: {
+        marginTop: theme.spacing(3),
+        marginBottom: theme.spacing(3),
+        padding: theme.spacing(2),
+        [theme.breakpoints.up(600 + theme.spacing(3) * 2)]: {
+            marginTop: theme.spacing(6),
+            marginBottom: theme.spacing(6),
+            padding: theme.spacing(3),
+        },
+    },
 }));
 
 export const ClientPage = (props) => {
@@ -157,15 +184,17 @@ export const ClientPage = (props) => {
     const history = useHistory()
     const fixedHeightPaper = clsx(classes.paper, classes.fixedHeight);
     const [clientForm, setClientForm] = useState([{}])
-    const [clientsTrenForm, setClientsTrenForm] = useState([{}])
     const [adminForm, setAdminForm] = useState([{}])
-    const [trenerForm, setTrenerForm] = useState([{}])
-    const [payForm, setPayForm] = useState([{}])
     const [payInfo, setPayInfo] = useState([{}])
     const [payModal, setPayModal] = useState(false)
+    const [changeModal, setChangeModal] = useState(false)
     const [rowsClient, setRowsClient] = useState([{id:1}])
     const [rowsAdmin, setRowsAdmin] = useState([{id:1}])
     const [rowsTrener, setRowsTrener] = useState([{id:1}])
+    const [rowsRoles, setRowsRoles] = useState([{id:1}])
+    const [rowsAllClients, setRowsAllClients] = useState([{id:1}])
+    const [newRole, setNewRole] = useState()
+    const [allRoles, setRoles] = useState([{}])
     const [select, setSelect] = useState([])
 
     const columns = [
@@ -185,6 +214,15 @@ export const ClientPage = (props) => {
         history.push('/fitzone')
     };
 
+    const changeRoleOpen = () => {
+        setChangeModal(true);
+    };
+
+    const changeRoleClose = () => {
+        setChangeModal(false);
+        roles()
+    };
+
     const handleDrawerOpen = () => {
         setOpen(true);
     };
@@ -196,6 +234,9 @@ export const ClientPage = (props) => {
     };
     const handleModalPayСlose = () => {
         setPayModal(false);
+    };
+    const handleChangeRole = (event) => {
+        setNewRole(event.target.value);
     };
 
     const submitTren = async (id, statusNew) => {
@@ -266,11 +307,45 @@ export const ClientPage = (props) => {
             console.log(e)
         }
     }, [request, token, curId])
-
+    const roles = useCallback(async () => {
+        try {
+            const fetched = await request(`/api/client/clientPage/roles`, 'GET', null, {})
+            setRowsRoles(fetched.result)
+        } catch (e) {
+            console.log(e)
+        }
+    }, [])
+    const allrole = useCallback(async () => {
+        try {
+            const fetched = await request(`/api/registration/role`, 'GET', null, {})
+            console.log("F,jytvtyns", fetched.result)
+            setRoles(fetched.result)
+        } catch (e) {
+            console.log(e)
+        }
+    }, [])
+    const changeRole = async (select, newRole) => {
+        changeRoleClose()
+        try {
+            const fetched = await request(`/api/client/clientPage/roles/change`, 'POST', {...select, newRole}, {})
+        } catch (e) {
+            console.log(e)
+        }
+    }
+    const allClientsInfo = useCallback(async () => {
+        try {
+            const fetched = await request(`/api/client/clientPage/allclientsinfo`, 'GET', null, {})
+            console.log("12346",fetched.result)
+            setRowsAllClients(fetched.result)
+        } catch (e) {
+            console.log(e)
+        }
+    },[])
 
         useEffect(() => {
             admin()
-            console.log("AdminForm", adminForm)
+            roles()
+            allrole()
         }, [])
         useEffect(() => {
             trener()
@@ -279,6 +354,9 @@ export const ClientPage = (props) => {
             client()
             clientsTren()
         }, [])
+    useEffect(() => {
+       allClientsInfo()
+    }, [])
 
     if (loading) {
         return <Loader/>
@@ -419,6 +497,7 @@ console.log("PayInfo", payInfo)
                                                         )}
                                                     {curRole == 'cl' && rowsClient.length>1 && (
                                                         <>
+                                                            <Typography variant='h5'>Мои персональные тренировки</Typography>
                                                             <div align="right">
                                                                 <div align="right">
                                                                     <Button onClick={handleModalPayOpen}>Оплатить</Button>
@@ -460,6 +539,7 @@ console.log("PayInfo", payInfo)
                                                     )}
                                                     {curRole == 'tren' && rowsTrener.length>1 && (
                                                         <>
+                                                            <Typography variant='h5'>Сведения о проводимых персональных тренировках</Typography>
                                                             <div style={{height: 400, width: '100%'}}>
                                                                 <DataGrid rows={rowsTrener} columns={[
                                                                     { field: 'FIO_cl', headerName: 'ФИО клиента', width: 150 },
@@ -480,26 +560,104 @@ console.log("PayInfo", payInfo)
                                         </Paper>
                                 )}
                             </Grid>
-                            {/* Recent Orders */}
+                            {loading && <Loader/>}
+                            {!loading && allRoles.length != 0 && curRole == 'admin' && (
+                                <>
                             <Grid item xs={12}>
                                 <Paper className={classes.paper}>
-                                    {curRole == 'admin' && (
-                                        <>
-                                            <Diagram/>
 
-                                        </>
-                                    )}
+                                            <Diagram/>
 
                                 </Paper>
                             </Grid>
-                        </Grid>
-                            {curRole == 'admin' && (
-                            <>
-                            <Paper className={fixedHeightPaper}>
-
-                            </Paper>
+                                    <Grid item xs={12}>
+                                        <Paper className={classes.paper}>
+                                            <Typography variant='h5'>Уровень доступа</Typography>
+                                            <div style={{height: 400, width: '100%'}}>
+                                                <DataGrid rows={rowsRoles} columns={[
+                                                    { field: 'FIO_cl', headerName: 'ФИО клиента', width: 150 },
+                                                    { field: 'email', headerName: 'email', width: 150 },
+                                                    { field: 'role', headerName: 'Уровень доступа', width: 150},
+                                                ]}
+                                                          pageSize={5} checkboxSelection onRowSelected={(x) => setSelect(x.data)}/>
+                                            </div>
+                                            <div align="right">
+                                                <Button onClick={changeRoleOpen}>Сменить уровень доступа</Button>
+                                                <Dialog onClose={changeRoleClose} aria-labelledby="customized-dialog-title" open={changeModal}>
+                                                    <DialogTitle id="customized-dialog-title" onClose={changeRoleClose}>
+                                                        <div className={classes.rootAvatar}>
+                                                            <Typography gutterBottom paragraph>Вы действительно хотите выделить пользователю {select.FIO_cl} другой уровень прав?</Typography>
+                                                        </div>
+                                                    </DialogTitle>
+                                                    <DialogContent dividers>
+                                                        <main className={classes.layout}>
+                                                            <Paper className={classes.paperModal}>
+                                                                <Grid container spacing={3}>
+                                                                    <Grid item xs={12} md={6}>
+                                                                        <TextField disabled id="standard-disabled" label="ФИО пользователя" defaultValue={select.FIO_cl} />
+                                                                    </Grid>
+                                                                    <Grid item xs={12} md={6}>
+                                                                        <TextField disabled id="standard-disabled" label="email" defaultValue={select.email} />
+                                                                    </Grid>
+                                                                    <Grid item xs={12} md={6}>
+                                                                        <FormHelperText required>Уровень доступа</FormHelperText>
+                                                                        <NativeSelect className={classes.select}
+                                                                                      defaultValue={allRoles[0].role}
+                                                                                      inputProps={{
+                                                                                          id: 'role',
+                                                                                      }}
+                                                                                      onChange={handleChangeRole}
+                                                                        >
+                                                                            {allRoles.map((option) => (
+                                                                                <option value={option.role} key=
+                                                                                    {option.role}>
+                                                                                    {option.role}
+                                                                                </option>
+                                                                            ))}
+                                                                        </NativeSelect>
+                                                                    </Grid>
+                                                                </Grid>
+                                                            </Paper>
+                                                        </main>
+                                                    </DialogContent>
+                                                    <DialogActions>
+                                                        <Button autoFocus onClick={()=>changeRole(select, newRole)} color="primary">
+                                                            Изменить
+                                                        </Button>
+                                                        <Button autoFocus onClick={changeRoleClose} color="primary">
+                                                            Назад
+                                                        </Button>
+                                                    </DialogActions>
+                                                </Dialog>
+                                            </div>
+                                        </Paper>
+                                    </Grid> 
                             </>
                             )}
+
+                        </Grid>
+                        {(curRole == 'admin' || curRole == 'tren') && (
+                            <Paper className={fixedHeightPaper}>
+                                <Grid item xs={12}>
+                                    <Paper className={classes.paper}>
+                                        <Typography variant='h5'>Сведения о клиентах</Typography>
+                                        <div style={{height: 400, width: '100%'}}>
+                                            <DataGrid rows={rowsAllClients} columns={[
+                                                { field: 'FIO_cl', headerName: 'ФИО клиента', width: 150 },
+                                                { field: 'Phone', headerName: 'Контактный телефон', width: 150 },
+                                                { field: 'Age', headerName: 'Дата рождения', width: 150},
+                                                { field: 'type', headerName: 'Тип абонемента', width: 150},
+                                                { field: 'srok', headerName: 'Срок действия в днях', width: 150},
+                                                { field: 'Activity', headerName: 'Активность абонемента', width: 150},
+                                                { field: 'DateActivity', type:'date', headerName: 'Дата начала действия', width: 150},
+                                                { field: 'endOfActivity',type:'date', headerName: 'Дата окончания действия', width: 150},
+                                            ]}
+                                                      pageSize={5} />
+                                        </div>
+                                    </Paper>
+                                </Grid>
+                            </Paper>
+                        )}
                     </Container>
                 </main>
 

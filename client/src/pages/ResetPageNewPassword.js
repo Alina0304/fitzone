@@ -15,10 +15,12 @@ import IconButton from "@material-ui/core/IconButton";
 import {Visibility, VisibilityOff} from "@material-ui/icons";
 import {Loader} from "../components/Loader";
 import {AlertPass} from "../components/AlertPass";
+import Grid from "@material-ui/core/Grid";
 
 
 
 const useStyles = makeStyles((theme) => ({
+    root: {height: '93vh',},
     paper: {
         marginTop: theme.spacing(8),
         display: 'flex',
@@ -81,8 +83,12 @@ export const ResetPageNewPassword = (props) => {
             {tokenLoader
                 ? <Loader/>
                 : !id
-                    ? <AlertPass/>
+                    ?
+                    <Grid container component="main" className={classes.root}>
+                        <AlertPass/>
+                    </Grid>
                     : (
+                        <Grid container component="main" className={classes.root}>
                         <Container component="main" maxWidth="xs">
                             <CssBaseline/>
                             <div className={classes.paper}>
@@ -124,6 +130,7 @@ export const ResetPageNewPassword = (props) => {
                                 </form>
                             </div>
                         </Container>
+                        </Grid>
                     )
             }
         </>

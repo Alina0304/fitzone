@@ -24,7 +24,7 @@ trener.opisanie,trener.citat FROM fit.trener, fit.account_kl WHERE account_kl.id
             });
 
         }catch (e) {
-            res.status(500).json({message:"Что-то пошло не так, поробуйте снова"});
+            return res.status(500).json({message:"Что-то пошло не так, поробуйте снова"});
         }
 
     })
@@ -46,7 +46,7 @@ stag=?, account_kl.phone=?, kategory=? opisanie=?, citat=? WHERE idtrener=?;`
             });
 
         }catch (e) {
-            res.status(500).json({message:"Что-то пошло не так, поробуйте снова"});
+            return res.status(500).json({message:"Что-то пошло не так, поробуйте снова"});
         }
 
     })

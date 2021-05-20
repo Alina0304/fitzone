@@ -32,6 +32,9 @@ import AccessTimeIcon from "@material-ui/icons/AccessTime";
 import moment from "moment";
 import DialogActions from "@material-ui/core/DialogActions";
 import {Link} from "react-router-dom";
+import ListItem from "@material-ui/core/ListItem";
+import PersonIcon from "@material-ui/icons/Person";
+import ScheduleIcon from "@material-ui/icons/Schedule";
 
 
 const useStyles = makeStyles((theme) => ({
@@ -41,7 +44,7 @@ const useStyles = makeStyles((theme) => ({
         marginTop: theme.spacing(30),
         marginRight: theme.spacing(2),
         [theme.breakpoints.up(600 + theme.spacing(2) * 2)]: {
-            width: 850,
+            width: 600,
             marginLeft: 'auto',
             marginRight: 'auto',
         },
@@ -61,26 +64,55 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-export const PayInfo = (props) => {
+export const NoutPage = () => {
     const classes = useStyles();
-    const {token} = useContext(AuthContext)
     const {loading, request} = useHttp();
-    let fl=false
+    const [selectedDate, setSelectedDate] = useState(new Date());
     const [clients, setClients]=useState([{}])
-    const [rows, setRows]=useState([{id:1}])
-    const oplata=[{id: 1, type:"абонемент"}, {id:2, type:"персональная тренировка"}]
-    const [select, setSelect]=useState([{}])
+    const [treners, setTreners]=useState([{}])
+    const [zanytie, setZaytie]=useState([{}])
+    const [state, setState]=useState(false)
+    const [resultCount, setResultCount]=useState(true)
     const [cl, setcl]=useState(1)
-    const [op, setop]=useState(1)
+    const [zan, setzan]=useState(1)
+    const [sum, setSum]=useState(1)
+    const [tren, settren]=useState(1)
 
+    const handleDateChange=(date)=>{
+        console.log(date);
+        setSelectedDate(date);
+    }
     const handleChangeClient = (event) => {
-        fl=true
         setcl(event.target.value);
     };
-    const handleChangeOplata = (event) => {
-        fl=true
-        setop(event.target.value);
-        console.log(op)
+    const handleChangeZanytie = (event) => {
+        setzan(event.target.value);
+    };
+    const handleChangeTrener = (event) => {
+        settren(event.target.value);
+    };
+    const handleCloseModal = () => {
+        setState(false);
+    };
+    const handleClickOpenModal = async (idtrener, selectedDate, zan) => {
+        setState(true);
+        try {
+            console.log("ТУТТ")
+            const fetched = await request(`/api/nouting/selecttrenerpt`, 'POST',{idtrener, selectedDate},{})
+            console.log("Поймали",fetched)
+            if (fetched.resultCount>0)
+                setResultCount(false);
+        } catch (e) {
+            console.log(e)
+        }
+        try {
+            console.log("ТУТТ")
+            const fetched = await request(`/api/nouting/selectsum`, 'POST',{zan},{})
+            setSum(fetched.result)
+        } catch (e) {
+            console.log(e)
+        }
+
     };
 
     const allClient = useCallback(async () => {
@@ -93,72 +125,80 @@ export const PayInfo = (props) => {
 
         }
     }, [])
-    const abonsTable=async(cl,op) => {
-        fl=true
-        console.log("fvdfg")
-        if (op==1) {
-            try {
-                const fetched = await request(`/api/payinfo/aboutclientabon`, 'POST', {cl})
-                console.log("Fetcheddata", fetched.result)
-                setRows(fetched.result)
-            } catch (e) {
-                console.log(e)
-            }
+    const allZanytie = useCallback(async () => {
+        try {
+            const fetched = await request(`/api/nouting/noutingpt`, 'GET', null, {})
+            console.log("Fetched",fetched)
+            setZaytie(fetched.result)
+        } catch (e) {
+            console.log(e)
         }
-        if(op==2){
-            try {
-                const fetched = await request(`/api/payinfo/aboutclientpt`, 'POST', {cl})
-                console.log("Fetcheddata", fetched.result)
-                setRows(fetched.result)
-            } catch (e) {
-                console.log(e)
-            }
+    }, [])
+    const allTreners = useCallback(async () => {
+        console.log("Before try")
+        try {
+            const fetched = await request('/api/trener/trenersPage', 'GET', null, {
+
+            })
+            console.log("Fetched",fetched)
+            setTreners(fetched.result)
+
+        } catch (e) {}
+    }, [])
+    const pay = async (sum, zan, tren, cl, selectedDate) => {
+        try {
+            const fetched = await request(`/api/nout/inserting`, 'POST', {cl, tren, selectedDate,zan}, {})
+            console.log("", fetched)
+
+        } catch (e) {
+            console.log(e)
         }
-        console.log("Вывод")
-    }
-    const pay=async(cl,op, select) => {
-        console.log("!",select)
-        if (op==1) {
-            try {
-                const fetched = await request(`/api/payinfo/payabon`, 'POST', {cl, ...select})
-            } catch (e) {
-                console.log(e)
-            }
+        try {
+            const fetched = await request(`/api/nout/insertingtwo`, 'POST', {cl, tren, sum}, {})
+            console.log("", fetched)
+
+        } catch (e) {
+            console.log(e)
         }
-        else {
-            try {
-                const fetched = await request(`/api/payinfo/paypt`, 'POST', {cl, ...select})
-            } catch (e) {
-                console.log(e)
-            }
+        try {
+            const fetched = await request(`/api/nout/insertingthree`, 'POST', {}, {})
+            console.log("", fetched)
+
+        } catch (e) {
+            console.log(e)
         }
-        console.log("Вывод")
-    }
+        handleCloseModal()
+    };
 
 
 
     useEffect(() => {
         allClient()
     }, [])
-
+    useEffect(() => {
+        allZanytie()
+    }, [])
+    useEffect(() => {
+        allTreners()
+    }, [])
 
     return (
         <main className={classes.layout}>
             <Paper className={classes.paper}>
                 <Typography component="h1" variant="h4" align="center">
-                    Регистрация нового клиента
+                    Запись на персональную тренировку
                 </Typography>
                 <Typography variant="h6" gutterBottom>
                     Заполните необходимую информацию:
                 </Typography>
                 {loading && <Loader/>}
-                {!loading && clients.length != 0 && (
+                {!loading && clients.length != 0 && treners.length!=0 && zanytie.length!=0 &&(
                     <>
                         <Grid container spacing={3}>
                             <Grid item xs={12} md={6}>
                                 <FormHelperText>Клиент</FormHelperText>
                                 <NativeSelect className={classes.select}
-                                    // defaultValue={clients[0].FIO_cl}
+                                     defaultValue={clients[0].FIO_cl}
                                               inputProps={{
                                                   id: 'id',
                                               }}
@@ -173,71 +213,117 @@ export const PayInfo = (props) => {
                                 </NativeSelect>
                             </Grid>
                             <Grid item xs={12} md={6}>
-                                <FormHelperText>Клиент</FormHelperText>
+                                <FormHelperText>Тренировка</FormHelperText>
                                 <NativeSelect className={classes.select}
-                                              defaultValue={oplata[0].type}
+                                              defaultValue={zanytie[0].nazvanie}
                                               inputProps={{
-                                                  id: 'id',
+                                                  id: 'idzanytie',
                                               }}
-                                              onChange={handleChangeOplata}
+                                              onChange={handleChangeZanytie}
                                 >
-                                    {oplata.map((option) => (
-                                        <option value={option.id} key=
-                                            {option.id}>
-                                            {option.type}
+                                    {zanytie.map((option) => (
+                                        <option value={option.idzanytie} key=
+                                            {option.idzanytie}>
+                                            {option.nazvanie}
                                         </option>
                                     ))}
                                 </NativeSelect>
                             </Grid>
-                            <Button onClick={()=>abonsTable(cl,op)}>Найти</Button>
-                            <div style={{height: 280, width: '100%'}}>
-                                {op == 1 ?
-                                    <DataGrid rows={rows}
-                                              columns={[{
-                                                  field: 'FIO_cl',
-                                                  headerName: 'ФИО клиента',
-                                                  width: 150
-                                              },
-                                                  {
-                                                      field: 'srok',
-                                                      headerName: 'Срок действия в днях',
-                                                      width: 200
-                                                  },
-                                                  {field: 'type', headerName: 'Тип', width: 100},
-                                                  {
-                                                      field: 'sumkoplate',
-                                                      headerName: 'Сумма к олпате',
-                                                      width: 120,
-                                                  },
-                                                  {
-                                                      field: 'oplacheno',
-                                                      headerName: 'Оплачено',
-                                                      width: 120,
-                                                  },]} pageSize={5} onRowSelected={(x) => setSelect(x.data)}/>
-                                    :
-                                    <DataGrid rows={rows}
-                                              columns={[{
-                                                  field: 'nazvanie',
-                                                  headerName: 'Название ',
-                                                  width: 150
-                                              },
-                                                  {field: 'fio_trener', headerName: 'ФИО тренера', width: 150},
-                                                  {field: 'datatime', headerName: 'Дата и время', width: 150},
-                                                  {field: 'status', headerName: 'Статус', width: 100},
-                                                  {
-                                                      field: 'sumkoplate',
-                                                      headerName: 'Сумма к олпате',
-                                                      width: 120,
-                                                  },
-                                                  {
-                                                      field: 'oplacheno',
-                                                      headerName: 'Оплачено',
-                                                      width: 120,
-                                                  }]} pageSize={5}
-                                              onRowSelected={(x) => setSelect(x.data)}/>
-                                }
-                            </div>
-                            <Button onClick={() =>pay(cl, op, select)} component={Link} to="/offlinepay">Оплатить</Button>
+                            <Grid item xs={12} md={6}>
+                            <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                                <KeyboardDatePicker
+                                    locale="ru"
+                                    margin="normal"
+                                    id="date-picker-dialog"
+                                    label="Дата"
+                                    views={['year', 'month', 'date']}
+                                    value={selectedDate}
+                                    format="dd/MM/yyyy"
+                                    onChange={handleDateChange}
+                                    KeyboardButtonProps={{
+                                        'aria-label': 'change date',
+                                    }}
+                                /><KeyboardTimePicker
+                                margin="normal"
+                                id="time-picker"
+                                label="Время"
+                                value={selectedDate}
+                                format="HH:MM"
+                                onChange={handleDateChange}
+                                KeyboardButtonProps={{
+                                    'aria-label': 'change time',
+                                }}
+                            />
+                            </MuiPickersUtilsProvider>
+                        </Grid>
+                            <Grid item xs={12} md={6}>
+                                <FormHelperText>Тренер</FormHelperText>
+                                <NativeSelect className={classes.select}
+                                              defaultValue={treners[0].fio_trener}
+                                              inputProps={{
+                                                  id: 'idtrener',
+                                              }}
+                                              onChange={handleChangeTrener}
+                                >
+                                    {treners.map((option) => (
+                                        <option value={option.idtrener} key=
+                                            {option.idtrener}>
+                                            {option.fio_trener}
+                                        </option>
+                                    ))}
+                                </NativeSelect>
+                            </Grid>
+                            <Grid item xs={12} md={6}>
+                            </Grid>
+                            <Grid item xs={12} md={6}>
+                                <Button onClick={()=>handleClickOpenModal(tren, selectedDate)}>Оплатить</Button>
+                                <Dialog
+                                    open={state}
+                                    keepMounted
+                                    onClose={handleCloseModal}
+                                    aria-labelledby="alert-dialog-slide-title"
+                                    aria-describedby="alert-dialog-slide-description"
+                                >
+                                    {resultCount==false ? (
+                                        <>
+                                        <DialogTitle id="alert-dialog-slide-title">Выбранное вами время уже
+                                            занято</DialogTitle>
+                                        <DialogContent>
+                                            <DialogContentText id="alert-dialog-slide-description">
+                                            </DialogContentText>
+                                        </DialogContent>
+                                        <DialogActions>
+                                        <Button onClick={handleCloseModal}>
+                                        Попробовать снова
+                                        </Button>
+                                        )}
+                                        <Button onClick={handleCloseModal} color="primary">
+                                        Назад
+                                        </Button>
+                                        </DialogActions>
+                                        </>
+                                        )
+                                        :
+                                        (
+                                            <>
+                                            <DialogTitle id="alert-dialog-slide-title">Оплата персональной тренировки</DialogTitle>
+                                            <DialogContent>
+                                                <DialogContentText id="alert-dialog-slide-description">
+                                                    {/*<Typography gutterBottom paragraph>Оплата персональной тренировки: {zanytie[zan].nazvanie}</Typography>*/}
+                                                    {/*<Typography gutterBottom paragraph><PersonIcon fontSize="large" />Тренер: {treners[tren].fio_trener}</Typography>*/}
+                                                    {/*<Typography gutterBottom paragraph><ScheduleIcon fontSize="large" />Дата и время: {selectedDate}</Typography>*/}
+                                                </DialogContentText>
+                                            </DialogContent>
+                                            <DialogActions>
+                                                <Button onClick={()=>pay(sum, zan, tren, cl, selectedDate)}>
+                                                    Оплатить
+                                                </Button>
+                                                </DialogActions>
+                                            </>
+                                        )
+                                    }
+                                </Dialog>
+                            </Grid>
                         </Grid>
                     </>
                 )}
