@@ -1,5 +1,5 @@
 import React from "react";
-import {Switch, Route, Redirect} from 'react-router-dom'
+import {Switch, Route} from 'react-router-dom'
 import {AuthPage} from "./pages/AuthPage";
 import {ClientPage} from "./pages/ClientPage"
 import {TrenersPage} from "./pages/TrenersPage"
@@ -13,13 +13,18 @@ import {LongingAbonPage} from "./pages/LongingAbonPage";
 import {RegistrationPage} from "./pages/RegistrationPage";
 import {PayInfo} from "./pages/PayInfo";
 import {NoutPage} from "./pages/NoutPage";
+import {ChangePage} from "./pages/ChangePage";
 
 
-export const useRoutes = isAuthenticated =>{
-    if(isAuthenticated){
-        return(
+//Модуль маршрутизации
+
+export const useRoutes = isAuthenticated => {
+    //Страницы доступнаые авторизованному пользователю
+    if (isAuthenticated) {
+        return (
             <Switch>
                 <Route path="/clientPage" exact>
+                    {/*Передача props странице*/}
                     <AuthContext.Consumer>
                         {value =>
 
@@ -34,32 +39,25 @@ export const useRoutes = isAuthenticated =>{
                             <TrenersPage role={value.role}/>
                         }
                     </AuthContext.Consumer>
-                    </Route>
+                </Route>
                 <Route path="/zanytiyPage" exact>
                     <AuthContext.Consumer>
                         {value =>
                             <ZanytiyPage role={value.role}/>
                         }
-                        </AuthContext.Consumer>
+                    </AuthContext.Consumer>
                 </Route>
                 <Route path="/noutingpt" exact>
                     <AuthContext.Consumer>
                         {value =>
                             <NoutingPersonalTrenPage userId={value.userId} email={value.email}/>
                         }
-                        </AuthContext.Consumer>
+                    </AuthContext.Consumer>
                 </Route>
                 <Route path="/longingabon" exact>
                     <AuthContext.Consumer>
                         {value =>
                             <LongingAbonPage userId={value.userId} role={value.role}/>
-                        }
-                    </AuthContext.Consumer>
-                </Route>
-                <Route path="/registration" exact>
-                    <AuthContext.Consumer>
-                        {value =>
-                            <RegistrationPage role={value.role}/>
                         }
                     </AuthContext.Consumer>
                 </Route>
@@ -78,30 +76,43 @@ export const useRoutes = isAuthenticated =>{
                     </AuthContext.Consumer>
                 </Route>
                 <Route path="/nout" exact>
-                    <NoutPage />
+                    <NoutPage/>
+                </Route>
+                <Route path="/change" exact>
+                    <AuthContext.Consumer>
+                        {value =>
+                            <ChangePage userId={value.userId}/>
+                        }
+                    </AuthContext.Consumer>
+                </Route>
+                <Route path="/changepassword" exact>
+                    <ResetPage/>
+                </Route>
+                <Route path="/reset/:token" exact render={(props) => <ResetPageNewPassword {...props}/>}>
                 </Route>
             </Switch>
         )
     }
+    //Страницы, доступные неавторизованному пользователю
     else {
         return (
             <Switch>
                 <Route path="/login" exact>
-                    <AuthPage />
+                    <AuthPage/>
                 </Route>
                 <Route path="/fitzone" exact>
-                    <NotAufPage />
+                    <NotAufPage/>
                 </Route>
                 <Route path="/resetpassword" exact>
-                    <ResetPage />
+                    <ResetPage/>
                 </Route>
-                <Route path="/reset/:token" exact render={(props)=><ResetPageNewPassword {...props}/>}>
+                <Route path="/reset/:token" exact render={(props) => <ResetPageNewPassword {...props}/>}>
                 </Route>
                 <Route path="/" exact>
-                    <NotAufPage />
+                    <NotAufPage/>
                 </Route>
                 <Route path="/registration" exact>
-                    <RegistrationPage />
+                    <RegistrationPage/>
                 </Route>
             </Switch>
         )

@@ -1,6 +1,6 @@
 import {useState, useCallback, useEffect} from 'react'
 
-
+//инициализация хранилища
 const storageName='userData'
 export const useAuth =()=>{
     const [token, setToken] = useState(null)
@@ -9,6 +9,7 @@ export const useAuth =()=>{
     const [role, setUserRole]=useState(null)
     const [email, setUserEmail]=useState(null)
 
+    //логика авторизации пользователя
     const login = useCallback((jwtToken, id, role, email)=>{
         console.log('token', token)
         setToken(jwtToken)
@@ -18,6 +19,7 @@ export const useAuth =()=>{
         console.log('role', role)
         localStorage.setItem(storageName, JSON.stringify({userId: id,token: jwtToken, role: role, email:email}))
     }, [])
+    //логика выхода пользователя из системы
     const logout =useCallback(()=>{
         setToken(null)
         setUserId(null)
@@ -26,6 +28,7 @@ export const useAuth =()=>{
         localStorage.removeItem(storageName)
     }, [])
 
+    //обработка данных
     useEffect(()=>{
         const data=JSON.parse(localStorage.getItem(storageName))
 

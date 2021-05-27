@@ -23,33 +23,24 @@ import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
 import MenuIcon from '@material-ui/icons/Menu';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
-import CheckIcon from '@material-ui/icons/Check';
-import CloseIcon from '@material-ui/icons/Close';
-import {Link, useHistory} from "react-router-dom";
+import {Link, Route, useHistory} from "react-router-dom";
 import {AuthContext} from '../context/AuthContext'
 import {useHttp} from "../hooks/http.hook";
 import {Loader} from '../components/Loader'
 import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
 import TableContainer from '@material-ui/core/TableContainer';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
 import {Card, CardActions, CardMedia} from "@material-ui/core";
 import {Diagram} from "../components/Diagram";
 import {PayForm} from "../components/PayForm";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import DialogContent from "@material-ui/core/DialogContent";
-import DialogContentText from "@material-ui/core/DialogContentText";
 import Dialog from "@material-ui/core/Dialog";
 import BorderColorIcon from '@material-ui/icons/BorderColor';
 import { DataGrid } from '@material-ui/data-grid';
 import AccountBalanceWalletIcon from '@material-ui/icons/AccountBalanceWallet';
-import AccessTimeIcon from "@material-ui/icons/AccessTime";
 import DialogActions from "@material-ui/core/DialogActions";
-import Avatar from "@material-ui/core/Avatar";
-import PersonIcon from "@material-ui/icons/Person";
-import ScheduleIcon from "@material-ui/icons/Schedule";
+import BuildIcon from '@material-ui/icons/Build';
+import HttpsIcon from '@material-ui/icons/Https';
 import TextField from "@material-ui/core/TextField";
 import FormHelperText from "@material-ui/core/FormHelperText";
 import NativeSelect from "@material-ui/core/NativeSelect";
@@ -417,20 +408,26 @@ console.log("PayInfo", payInfo)
                     </div>
                     <Divider/>
                     <List>
-                        <ListItem button component={Link} to="/longingabon">
-                        <ListItemIcon>
-                            <FaceIcon/>
-                        </ListItemIcon>
-                        <ListItemText primary="Продлить абонемент"/>
-                    </ListItem>
-                        <ListItem button component={Link} to="/offlinepay">
+                        <ListItem button component={Link} to="/change ">
                             <ListItemIcon>
-                                <AccountBalanceWalletIcon />
+                                <BuildIcon/>
                             </ListItemIcon>
-                            <ListItemText primary="Оплатить"/>
+                            <ListItemText primary="Редактировать"/>
+                        </ListItem>
+                        <ListItem button component={Link} to="/changepassword ">
+                            <ListItemIcon>
+                                <HttpsIcon/>
+                            </ListItemIcon>
+                            <ListItemText primary="Смена пароля"/>
                         </ListItem>
                         {curRole=='cl' && (
                             <>
+                            <ListItem button component={Link} to="/longingabon">
+                                <ListItemIcon>
+                                    <FaceIcon/>
+                                </ListItemIcon>
+                                <ListItemText primary="Продлить абонемент"/>
+                            </ListItem>
                             <ListItem button component={Link} to="/noutingpt">
                                 <ListItemIcon>
                                     <FitnessCenterIcon/>
@@ -447,7 +444,12 @@ console.log("PayInfo", payInfo)
                             </ListItemIcon>
                             <ListItemText primary="Зарегестрировать"/>
                         </ListItem>
-
+                                <ListItem button component={Link} to="/offlinepay">
+                                    <ListItemIcon>
+                                        <AccountBalanceWalletIcon />
+                                    </ListItemIcon>
+                                    <ListItemText primary="Оплатить"/>
+                                </ListItem>
                             <ListItem button component={Link} to="/nout">
                             <ListItemIcon>
                             <BorderColorIcon/>

@@ -145,7 +145,7 @@ export const PayInfo = (props) => {
         <main className={classes.layout}>
             <Paper className={classes.paper}>
                 <Typography component="h1" variant="h4" align="center">
-                    Регистрация нового клиента
+                    Внести сведения об оплате
                 </Typography>
                 <Typography variant="h6" gutterBottom>
                     Заполните необходимую информацию:

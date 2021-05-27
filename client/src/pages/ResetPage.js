@@ -77,7 +77,7 @@ export const ResetPage = () => {
                     <LockIcon />
                 </Avatar>
                 <Typography component="h1" variant="h5">
-                    Восстановление пароля
+                    Смена пароля
                 </Typography>
                 <form className={classes.form} noValidate>
                     <TextField
@@ -104,12 +104,12 @@ export const ResetPage = () => {
                     <Dialog onClose={handleCloseModal} aria-labelledby="customized-dialog-title" open={state}>
                         <DialogTitle id="customized-dialog-title" onClose={handleCloseModal}>
                             <Typography variant='h5' gutterBottom>
-                                Запрос на восстановление пароля
+                                Запрос на смену пароля
                             </Typography>
                         </DialogTitle>
                         <DialogContent dividers>
                             <Typography gutterBottom paragraph>
-                               На указанный адрес электронной почты: {email} выслана ссылка для восстановления пароля.
+                               На указанный адрес электронной почты: {email} выслана ссылка для смены пароля.
                             </Typography>
                             <Typography gutterBottom paragraph>
                                Если Вам не пришло письмо, пожалуйста, проверьте папку СПАМ и корректность адреса электрронной почты.

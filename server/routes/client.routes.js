@@ -26,7 +26,7 @@ router.get(
         try{
             console.log("req params", req.params.id)
           const clientsTren=`SELECT DISTINCT trenersdata.FIO_cl AS fio_trener,
-                personaltren.idpt AS id,personaltren.status,personaltren.datatime,zanytie.nazvanie, paypersonaltren.summ AS oplacheno, zanytie.sum AS sumkoplate FROM fit.account_kl AS clientsdata
+                personaltren.idpt AS id,personaltren.status,DATE_FORMAT(personaltren.datatime,'%d.%m.%Y %H:%i') AS datatime,zanytie.nazvanie, paypersonaltren.summ AS oplacheno, zanytie.sum AS sumkoplate FROM fit.account_kl AS clientsdata
             JOIN fit.personaltren ON clientsdata.id=personaltren.idclent
             JOIN fit.trener ON personaltren.idtrener=trener.idtrener
             JOIN fit.account_kl AS trenersdata ON trener.idtrener=trenersdata.id

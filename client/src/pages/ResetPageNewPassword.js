@@ -123,7 +123,7 @@ export const ResetPageNewPassword = (props) => {
                                         color="primary"
                                         className={classes.submit}
                                         onClick={newPass}
-                                        component={Link} to="/login"
+                                        component={Link} to="/"
                                     >
                                         Восстановить доступ
                                     </Button>

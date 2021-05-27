@@ -8,12 +8,12 @@ import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import {Link} from "react-router-dom";
 import Box from '@material-ui/core/Box';
-import { makeStyles } from '@material-ui/core/styles';
+import {makeStyles} from '@material-ui/core/styles';
 import {useHttp} from "../hooks/http.hook";
 import {useMessage} from "../hooks/message.hook";
 import {AuthContext} from "../context/AuthContext";
 
-
+//Стили
 const useStyles = makeStyles(theme => ({
     root: {
         height: '100vh',
@@ -23,7 +23,7 @@ const useStyles = makeStyles(theme => ({
         backgroundRepeat: 'no-repeat',
         backgroundSize: 'cover',
         backgroundPosition: 'center',
-    },  paper: {
+    }, paper: {
         margin: theme.spacing(8, 4),
         display: 'flex',
         flexDirection: 'column',
@@ -43,8 +43,10 @@ const useStyles = makeStyles(theme => ({
 }));
 
 export const AuthPage = () => {
+    //подключение контекста
     const auth = useContext(AuthContext)
     const message = useMessage();
+    //подключение хука
     const {loading, error, request, clearError} = useHttp();
     const [form, setForm] = useState({
         email: '', password: ''
@@ -57,6 +59,7 @@ export const AuthPage = () => {
         setForm({...form, [event.target.name]: event.target.value})
     }
     const classes = useStyles();
+    //POST-запрос на регистрацию
     const registerHandler = async () => {
         try {
             const data = await request('/api/auth/register', 'POST', {...form})
@@ -66,17 +69,19 @@ export const AuthPage = () => {
 
         }
     }
+    //POST-запрос на авторизацию
     const loginHandler = async () => {
         try {
             const data = await request('/api/auth/login', 'POST', {...form})
             console.log("Data", data);
-            auth.login(data.token, data.userId, data.role,data.email)
+            auth.login(data.token, data.userId, data.role, data.email)
 
 
         } catch (e) {
 
         }
     }
+    //Отображение страницы
     return (
         <Grid container component="main" className={classes.root}>
             <CssBaseline/>
