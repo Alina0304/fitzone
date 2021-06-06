@@ -12,6 +12,7 @@ router.get(
 personaltren 
 JOIN trener ON personaltren.idtrener=trener.idtrener 
 JOIN account_kl ON account_kl.id=trener.idtrener 
+JOIN auth ON auth.idauth=account_kl.id AND auth.role='tren'
 group by personaltren.idtrener;`
             db.query(trenerClient, [],(err, result)=>{
 

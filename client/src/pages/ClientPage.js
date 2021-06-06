@@ -133,13 +133,14 @@ const useStyles = makeStyles((theme) => ({
         flexDirection: 'column',
     },
     fixedHeight: {
-        height: 500,
+        height: 'auto',
     },
     cardMedia: {
         paddingTop: "101.25%"
     },
     table: {
         minWidth: 650,
+        height: 'auto',
     },
     layout: {
         width: 'auto',
@@ -234,7 +235,7 @@ export const ClientPage = (props) => {
         console.log("card", id)
         try {
             const fetched = await request(`/api/client/clientPage/admin/updating/${curId}`, 'POST', {
-                id,
+            ...select,
                 statusNew
             }, {Authorization: `Bearer ${token}`})
             console.log("", fetched)
@@ -250,7 +251,7 @@ export const ClientPage = (props) => {
                 trener()
                 break
             case 'cl':
-                break
+                client()
         }
     }
 
@@ -317,6 +318,7 @@ export const ClientPage = (props) => {
     }, [])
     const changeRole = async (select, newRole) => {
         changeRoleClose()
+        allrole()
         try {
             const fetched = await request(`/api/client/clientPage/roles/change`, 'POST', {...select, newRole}, {})
         } catch (e) {
@@ -489,11 +491,11 @@ console.log("PayInfo", payInfo)
                                                         <div>
                                                             <div style={{height: 400, width: '100%'}}>
                                                                     <DataGrid rows={rowsAdmin} columns={columns}
-                                                                              pageSize={5} checkboxSelection onRowSelected={(x) => setSelect(x.data.id)}/>
+                                                                              pageSize={5} checkboxSelection onRowSelected={(x) => setSelect(x.data)}/>
                                                         </div>
                                                             <div align="right">
-                                                                <Button onClick={()=>submitTren(select, "yes")}>Подтвердить</Button>
-                                                                <Button onClick={()=>submitTren(select, "no")}>Отменить</Button>
+                                                                <Button onClick={()=>submitTren(select, "Подтверждено")}>Подтвердить</Button>
+                                                                <Button onClick={()=>submitTren(select, "Не подтверждено")}>Отменить</Button>
                                                             </div>
                                                         </div>
                                                         )}
@@ -513,7 +515,7 @@ console.log("PayInfo", payInfo)
                                                                 >
                                                                     <DialogTitle id="alert-dialog-slide-title">Оплата персональной тренировки</DialogTitle>
                                                                     <DialogContent>
-                                                                        <PayForm />
+                                                                        <PayForm type={"Оплата персональной тренировки"} sum={select.sumkoplate}/>
                                                                     </DialogContent>
                                                                     <DialogActions>
                                                                         <Button onClick={handleModalPayСlose} color="primary">
@@ -527,14 +529,14 @@ console.log("PayInfo", payInfo)
                                                                     { field: 'fio_trener', headerName: 'ФИО тренера', width: 150 },
                                                                     { field: 'nazvanie', headerName: 'Название', width: 150 },
                                                                     { field: 'datatime', headerName: 'Дата и время', width: 150},
-                                                                    { field: 'status', headerName: 'Статус', width: 120,},
-                                                                    { field: 'oplacheno', headerName: 'Оплачено', width: 120,},
+                                                                    { field: 'status', headerName: 'Статус', width: 150,},
+                                                                    { field: 'oplacheno', headerName: 'Оплачено', width: 100,},
                                                                     { field: 'sumkoplate', headerName: 'Сумма к оплате', width: 120,},]}
-                                                                          pageSize={5} checkboxSelection onRowSelected={(x) => setSelect(x.data.id)}/>
+                                                                          pageSize={5} checkboxSelection onRowSelected={(x) => setSelect(x.data)}/>
                                                             </div>
                                                             <div align="right">
-                                                                <Button onClick={()=>submitTren(select, "yes")}>Подтвердить</Button>
-                                                                <Button onClick={()=>submitTren(select, "no")}>Отменить</Button>
+                                                                <Button onClick={()=>submitTren(select, "Подтверждено")}>Подтвердить</Button>
+                                                                <Button onClick={()=>submitTren(select, "Не подтверждено")}>Отменить</Button>
                                                             </div>
 
                                                         </>
@@ -549,11 +551,11 @@ console.log("PayInfo", payInfo)
                                                                     { field: 'datatime', headerName: 'Дата и время', width: 150},
                                                                     { field: 'status', headerName: 'Статус', width: 120,},
                                                                    ]}
-                                                                          pageSize={5} checkboxSelection onRowSelected={(x) => setSelect(x.data.id)}/>
+                                                                          pageSize={5} checkboxSelection onRowSelected={(x) => setSelect(x.data)}/>
                                                             </div>
                                                             <div align="right">
-                                                                <Button onClick={()=>submitTren(select, "yes")}>Подтвердить</Button>
-                                                                <Button onClick={()=>submitTren(select, "no")}>Отменить</Button>
+                                                                <Button onClick={()=>submitTren(select, "Подтверждено")}>Подтвердить</Button>
+                                                                <Button onClick={()=>submitTren(select, "Не подтверждено")}>Отменить</Button>
                                                             </div>
                                                         </>
                                                     )}

@@ -7,12 +7,48 @@ const mailer=require('../config/nodemailer')
 
 let idpt=0
 let idpay=0
+
+
+router.post('/insertingpt',
+    async (req, res)=> {
+        try {
+            console.log('body', req.body)
+            let em
+            const email = "SELECT email FROM auth WHERE idauth=?"
+            db.query(email, req.body.cl, (err, result) => {
+                console.log("Результат выборки", result);
+                em = result.email
+
+                const insertPt = "INSERT INTO fit.personaltren(idclent, idtrener, datatime, idzan) VALUES (?,?,?,?);"
+                db.query(insertPt, [req.body.cl, req.body.tren, dateFormat(req.body.selectedDate, "yyyy-mm-dd HH:MM:ss"), req.body.zan], (err, result) => {
+                    console.log("Error", err)
+                    console.log("Резльтат вставки", result);
+                    idpt = result.insertId
+                    const message = {
+                        to: em,
+                        subject: 'Запись на персональную тренировку прошшла успешно!',
+                        text: `Вы запилсаись на персональную тренировку ${req.body.nazvanie} 
+                    ${dateFormat(req.body.selectedDate, "yyyy-mm-dd HH:MM:ss")}
+                    Хорошего дня!`
+
+                    }
+                    mailer(message)
+
+                });
+            });
+        } catch (e) {
+            return res.status(400).json({message: 'Ответил'})
+        }
+    }
+
+)
+
 router.post(
     '/inserting',
     async (req, res)=>{
         try{
             let em
-        const email="SELECT email FROM auth WHERE id=?"
+        const email="SELECT email FROM auth WHERE idauth=?"
             db.query(email, req.body.cl, (err, result) => {
                 console.log("Результат выборки", result);
                 res.json({result});

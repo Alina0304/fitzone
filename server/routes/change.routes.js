@@ -31,7 +31,6 @@ router.post(
     async (req, res) => {
         const data = req.body.data.replace(/^data:image\/\w+;base64,/, "");
         const buf = Buffer.from(data, 'base64')
-        console.log("Текущая директория",__dirname)
         const nameLen=req.body.fileName.length
         const name=req.body.fileName.substr(0,nameLen-4)
         const type=req.body.fileName.substr(nameLen-4, nameLen)

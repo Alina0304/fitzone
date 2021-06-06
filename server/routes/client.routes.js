@@ -99,8 +99,8 @@ router.post(
 console.log("Обработка запроса", req.body)
            const updateStatus=`UPDATE fit.personaltren SET personaltren.status=? WHERE fit.personaltren.idpt=?;`
             db.query(updateStatus, [req.body.statusNew,req.body.id],(err, result)=>{
-               //console.log("Error",err)
-               //console.log("Результат выборки",result);
+               console.log("Error",err)
+               console.log("Результат выборки",result);
 
                res.json({result});
 
@@ -149,7 +149,7 @@ router.get(
     '/clientPage/allclientsinfo',
     async (req, res)=>{
         try{
-            const allClInfo=` SELECT account_kl.id, account_kl.FIO_cl, account_kl.Age, 
+            const allClInfo=` SELECT account_kl.id, account_kl.FIO_cl, DATE_FORMAT(account_kl.Age,'%d.%m.%Y') AS Age, 
  account_kl.Phone, abonement.type, aboninfo.srok, abonpay.Activity, DATE_FORMAT(abonpay.DateActivity,'%d.%m.%Y') AS DateActivity,
   DATE_FORMAT(DATE_ADD(abonpay.DateActivity, INTERVAL srok DAY),'%d.%m.%Y') AS endOfActivity FROM account_kl JOIN abonpay 
   ON abonpay.idclient=account_kl.id 

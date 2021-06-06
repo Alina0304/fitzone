@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import GoogleMapReact from 'google-map-react';
 
 
-const AnyReactComponent = ({ text }) => (
+const Marker = ({ text }) => (
     <div style={{
         color: 'white',
         background: 'red',
@@ -29,11 +29,10 @@ export const GoogleMap=()=>{
  return (
             <div style={{ height: '100vh', width: '100%' }}>
                 <GoogleMapReact
-                    // bootstrapURLKeys={{ key:' "https://maps.googleapis.com/maps/api/js?v=3.exp&libraries=geometry,drawing,places",' }}
                     defaultCenter={defaultProps.center}
                     defaultZoom={defaultProps.zoom}
                 >
-                    <AnyReactComponent
+                    <Marker
                         lat={51.656334}
                         lng={39.206089}
                         text="Мы здесь!"

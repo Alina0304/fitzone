@@ -22,6 +22,7 @@ app.use('/api/registration', require('./routes/registration.routes'))
 app.use('/api/payinfo', require('./routes/payinfo.routes'))
 app.use('/api/nout', require('./routes/nout.routes'))
 app.use('/api/changing', require('./routes/change.routes'))
+app.use('/api/calendar', require('./routes/calendar.routes'))
 
 const PORT = config.get('port') || 5000;
 

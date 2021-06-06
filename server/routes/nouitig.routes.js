@@ -74,7 +74,6 @@ router.post(
 
     }
 )
-
 router.post(
     '/selecttrenerpt',
     async (req, res) => {

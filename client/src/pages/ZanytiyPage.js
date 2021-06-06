@@ -20,6 +20,7 @@ import TextareaAutosize from "@material-ui/core/TextareaAutosize";
 import AccessTimeIcon from "@material-ui/icons/AccessTime";
 import moment from "moment";
 import Avatar from "@material-ui/core/Avatar";
+import {MyCalendar} from "../components/TrensCalendar";
 
 
 const useStyles = makeStyles((theme)=>({
@@ -72,6 +73,9 @@ cardGrid: {
     formControl: {
         margin: theme.spacing(1),
         minWidth: 100,
+    },
+    fixedHeight: {
+        height: 'auto',
     },
 
 
@@ -138,7 +142,6 @@ export const ZanytiyPage = (props) =>{
         setSelectedDate(date);
     }
     const handleClickOpen = async (name, number, trener, opisanie, opisaniepodrobno, selectedDate, idzanytie) => {
-        //setOpen(true);
         try {
             const fetched = await request(`/api/zanytiy/zanytiyPage`, 'POST',{name, number, trener, opisanie, opisaniepodrobno, selectedDate, idzanytie})
             console.log("",fetched)
@@ -183,7 +186,7 @@ export const ZanytiyPage = (props) =>{
                                     color='inherit'
                                     gutterBottom
                                 >
-                                    Fitness
+                                    FitZone
                                 </Typography>
                                 <Typography
 
@@ -191,10 +194,10 @@ export const ZanytiyPage = (props) =>{
                                     color='inherit'
                                     paragraph
                                 >
-                                    Lorem ipsum
+                                    Прививаем любовь к спорту с первого шага!
                                 </Typography>
                                 <Button variant="contained" color='secondary'>
-                                    Learn more
+                                    Начать сейчас
                                 </Button>
                             </div>
                         </Grid>
@@ -210,15 +213,15 @@ export const ZanytiyPage = (props) =>{
                     <div className={classes.mainButtons}>
                         <Grid container spacing={4} justify="center">
                             <Grid item>
-                                <Button variant="outlined" color='primary'>
-                                    Learn More
-                                </Button>
                             </Grid>
                         </Grid>
                     </div>
                 </Container>
             </div>
             <Container className={classes.cardGrid} maxWidth="md">
+                <Paper className={classes.fixedHeight}>
+              <MyCalendar />
+                </Paper>
                 {loading && <Loader/>}
                 {!loading && zanytieForm.length != 0 && (
                     <>

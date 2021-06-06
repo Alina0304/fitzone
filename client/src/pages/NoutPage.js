@@ -94,19 +94,23 @@ export const NoutPage = () => {
     const handleCloseModal = () => {
         setState(false);
     };
-    const handleClickOpenModal = async (idtrener, selectedDate, zan) => {
+    const insertingInfo = async (cl,tren,selectedDate,zan) => {
+        try {
+            const fetched = await request(`/api/nout/insertingpt`, 'POST', {cl, tren, selectedDate,zan}, {})
+        } catch (e) {
+            console.log(e)
+        }
+    }
+    const handleClickOpenModal = async (idtrener,selectedDate,zan) => {
         setState(true);
         try {
-            console.log("ТУТТ")
             const fetched = await request(`/api/nouting/selecttrenerpt`, 'POST',{idtrener, selectedDate},{})
-            console.log("Поймали",fetched)
             if (fetched.resultCount>0)
                 setResultCount(false);
         } catch (e) {
             console.log(e)
         }
         try {
-            console.log("ТУТТ")
             const fetched = await request(`/api/nouting/selectsum`, 'POST',{zan},{})
             setSum(fetched.result)
         } catch (e) {
@@ -146,13 +150,7 @@ export const NoutPage = () => {
         } catch (e) {}
     }, [])
     const pay = async (sum, zan, tren, cl, selectedDate) => {
-        try {
-            const fetched = await request(`/api/nout/inserting`, 'POST', {cl, tren, selectedDate,zan}, {})
-            console.log("", fetched)
-
-        } catch (e) {
-            console.log(e)
-        }
+        insertingInfo(cl,tren,selectedDate,zan)
         try {
             const fetched = await request(`/api/nout/insertingtwo`, 'POST', {cl, tren, sum}, {})
             console.log("", fetched)
@@ -274,9 +272,10 @@ export const NoutPage = () => {
                                 </NativeSelect>
                             </Grid>
                             <Grid item xs={12} md={6}>
+                                <Button component={Link} to="/clientPage">Назад</Button>
                             </Grid>
                             <Grid item xs={12} md={6}>
-                                <Button onClick={()=>handleClickOpenModal(tren, selectedDate)}>Оплатить</Button>
+                                <Button onClick={()=>handleClickOpenModal(tren, selectedDate)}>Записать</Button>
                                 <Dialog
                                     open={state}
                                     keepMounted
@@ -309,16 +308,17 @@ export const NoutPage = () => {
                                             <DialogTitle id="alert-dialog-slide-title">Оплата персональной тренировки</DialogTitle>
                                             <DialogContent>
                                                 <DialogContentText id="alert-dialog-slide-description">
-                                                    {/*<Typography gutterBottom paragraph>Оплата персональной тренировки: {zanytie[zan].nazvanie}</Typography>*/}
-                                                    {/*<Typography gutterBottom paragraph><PersonIcon fontSize="large" />Тренер: {treners[tren].fio_trener}</Typography>*/}
-                                                    {/*<Typography gutterBottom paragraph><ScheduleIcon fontSize="large" />Дата и время: {selectedDate}</Typography>*/}
+                                                    <Typography gutterBottom paragraph>Внесите сведения об оплате наличными сейчас, нажав "Оплатить"</Typography>
                                                 </DialogContentText>
                                             </DialogContent>
                                             <DialogActions>
-                                                <Button onClick={()=>pay(sum, zan, tren, cl, selectedDate)}>
+                                                <Button onClick={()=>insertingInfo(cl,tren,selectedDate,zan)} component={Link} to="/clientPage">
+                                                    Позже
+                                                </Button>
+                                                <Button onClick={()=>pay(sum, zan, tren, cl, selectedDate)} component={Link} to="/clientPage">
                                                     Оплатить
                                                 </Button>
-                                                </DialogActions>
+                                            </DialogActions>
                                             </>
                                         )
                                     }

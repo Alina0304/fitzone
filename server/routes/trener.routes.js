@@ -13,8 +13,8 @@ router.get(
     '/trenersPage',
     async (req, res) => {
         try{
-            const trener=`SELECT trener.idtrener,account_kl.FIO_cl AS fio_trener,trener.stag,account_kl.phone,trener.kategory,account_kl.img,
-trener.opisanie,trener.citat FROM fit.trener, fit.account_kl WHERE account_kl.id=trener.idtrener;`
+            const trener=`SELECT distinct trener.idtrener,account_kl.FIO_cl AS fio_trener,trener.stag,account_kl.phone,trener.kategory,account_kl.img,
+trener.opisanie,trener.citat FROM fit.trener, fit.account_kl, fit.auth WHERE account_kl.id=trener.idtrener AND auth.role='tren' AND auth.idauth=trener.idtrener;`
             db.query(trener, [],(err, result)=>{
                 console.log("Error",err)
                 console.log("Результат выборки",result);

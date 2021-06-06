@@ -204,7 +204,7 @@ export const NoutingPersonalTrenPage = (props) =>{
                                     color='inherit'
                                     gutterBottom
                                 >
-                                    Fitness
+                                    FitZone
                                 </Typography>
                                 <Typography
 
@@ -212,11 +212,8 @@ export const NoutingPersonalTrenPage = (props) =>{
                                     color='inherit'
                                     paragraph
                                 >
-                                    Lorem ipsum
+                                    Персональный тренинг - луший путь к результату!
                                 </Typography>
-                                <Button variant="contained" color='secondary'>
-                                    Learn more
-                                </Button>
                             </div>
                         </Grid>
                     </Grid>

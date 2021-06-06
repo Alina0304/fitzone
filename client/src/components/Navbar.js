@@ -76,7 +76,7 @@ export const Navbar = () =>{
             <Toolbar>
                 <IconButton edge='start' color="inherit" aria-label='menu' className={classes.menuButton}>
                 </IconButton>
-                <Typography variant="h6" className={classes.title}> Fitness
+                <Typography variant="h6" className={classes.title}> FitZone
                 </Typography>
                 <Box mr={2}>
                     <Button component={Link} to="/clientPage" color="inherit" align="left">

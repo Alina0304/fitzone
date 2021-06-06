@@ -221,7 +221,7 @@ export const TrenersPage = (props) => {
                                     variant="contained"
                                     color='primary'
                                     component={Link} to="/noutingpt">
-                                    Start now
+                                    Начать сейчас
                                 </Button>
                             </Grid>
                             <Grid item>
