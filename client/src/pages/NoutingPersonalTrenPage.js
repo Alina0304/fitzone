@@ -23,6 +23,7 @@ import Dialog from "@material-ui/core/Dialog";
 import Slide from "@material-ui/core/Slide";
 import {Loader} from "../components/Loader";
 import Avatar from "@material-ui/core/Avatar";
+import {MyCalendar} from "../components/TrensCalendar";
 
 const useStyles = makeStyles((theme)=>({
     root: {
@@ -239,6 +240,10 @@ export const NoutingPersonalTrenPage = (props) =>{
                 {loading && <Loader/>}
                 {!loading && noutingForm.length != 1 && (
                     <>
+                        <Paper className={classes.fixedHeight}>
+                            <Typography variant="h4" align='center' color="textPrimary" gutterBottom> График тренировок </Typography>
+                            <MyCalendar />
+                        </Paper>
                     <Grid container spacing={4}>
                         {
                         noutingForm.map((card,index) => (

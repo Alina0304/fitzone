@@ -219,9 +219,6 @@ export const ZanytiyPage = (props) =>{
                 </Container>
             </div>
             <Container className={classes.cardGrid} maxWidth="md">
-                <Paper className={classes.fixedHeight}>
-              <MyCalendar />
-                </Paper>
                 {loading && <Loader/>}
                 {!loading && zanytieForm.length != 0 && (
                     <>

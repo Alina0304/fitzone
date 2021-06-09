@@ -16,6 +16,7 @@ const useStyles = makeStyles((theme) => ({
 }))
 
 export const MyCalendar = () => {
+    let allViews = Object.keys(Views).map(k => Views[k])
     const classes=useStyles();
     const {loading,request} = useHttp();
     const [calendar, setCalendar] = useState([{}]);
@@ -35,9 +36,8 @@ export const MyCalendar = () => {
 
     const myEventList = [{
         title: 'test',
-        start: new Date(2021, 6, 1, 12, 0),
-        end: new Date(2021, 6, 1, 13, 0),
-        allDay: 'false',
+        start: new Date(2021, 6, 8, 14, 0),
+        end: new Date(2021, 6, 8, 18, 0),
     }];
 
     return (
@@ -45,9 +45,10 @@ export const MyCalendar = () => {
         {loading && <Loader/>}
         {!loading && calendar.length != 0 && (
         <Calendar
+            views={allViews}
             className={classes.calendar}
             localizer={localizer}
-            events={calendar}
+            events={myEventList}
             startAccessor="start"
             endAccessor="end"
         />

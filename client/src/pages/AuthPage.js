@@ -12,6 +12,8 @@ import {makeStyles} from '@material-ui/core/styles';
 import {useHttp} from "../hooks/http.hook";
 import {useMessage} from "../hooks/message.hook";
 import {AuthContext} from "../context/AuthContext";
+import {AlertPass} from "../components/AlertPass";
+
 
 //Стили
 const useStyles = makeStyles(theme => ({
@@ -51,10 +53,14 @@ export const AuthPage = () => {
     const [form, setForm] = useState({
         email: '', password: ''
     })
+
     useEffect(() => {
-        message(error);
-        clearError();
+        message(error)
+        clearError()
     }, [error, message, clearError])
+    useEffect(() => {
+        window.M.updateTextFields()
+    }, [])
     const changeHandler = event => {
         setForm({...form, [event.target.name]: event.target.value})
     }
@@ -73,10 +79,7 @@ export const AuthPage = () => {
     const loginHandler = async () => {
         try {
             const data = await request('/api/auth/login', 'POST', {...form})
-            console.log("Data", data);
             auth.login(data.token, data.userId, data.role, data.email)
-
-
         } catch (e) {
 
         }
@@ -120,17 +123,29 @@ export const AuthPage = () => {
 
                             onChange={changeHandler}
                         />
-                        <Button
-                            fullWidth
-                            variant="contained"
-                            color="primary"
-                            className={classes.submit}
-                            disabled={loading}
-                            onClick={loginHandler}
-                            component={Link} to="/trenersPage"
-                        >
-                            Войти
-                        </Button>
+                        {auth.token == null ? (<Button
+                                fullWidth
+                                variant="contained"
+                                color="primary"
+                                className={classes.submit}
+                                disabled={loading}
+                                onClick={loginHandler}
+                                component={Link} to="/message"
+                            >
+                                Войти
+                            </Button>) :
+                            (<Button
+                                fullWidth
+                                variant="contained"
+                                color="primary"
+                                className={classes.submit}
+                                disabled={loading}
+                                onClick={loginHandler}
+                                component={Link} to="/trenersPage"
+                            >
+                                Войти
+                            </Button>)
+                        }
                         <Grid container>
                             <Grid item xs>
                                 <Button

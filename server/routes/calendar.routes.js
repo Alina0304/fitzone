@@ -11,8 +11,8 @@ router.get(
     async (req, res) => {
         console.log("ID", req.params.id)
         try{
-            const calendar=`SELECT account_kl.FIO_cl AS title,treners.FIO_cl,zanytie.nazvanie, DATE_FORMAT(personaltren.datatime,'%Y-%m-%d %H:%i') AS 'start',
-DATE_FORMAT(personaltren.datatimeend,'%Y-%m-%d %H:%i') AS 'end' FROM personaltren 
+            const calendar=`SELECT concat(account_kl.FIO_cl,' ',zanytie.nazvanie) AS title,treners.FIO_cl, DATE_FORMAT(personaltren.datatime,'%Y-%m-%d %H:%i') AS 'start',
+DATE_FORMAT(personaltren.datatimeend,'%Y-%m-%d %H:%i') AS 'end' FROM personaltren
      JOIN account_kl ON personaltren.idclent=account_kl.id
      JOIN trener ON trener.idtrener=personaltren.idtrener
      JOIN account_kl AS treners ON trener.idtrener=treners.id

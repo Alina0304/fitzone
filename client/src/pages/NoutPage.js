@@ -35,6 +35,7 @@ import {Link} from "react-router-dom";
 import ListItem from "@material-ui/core/ListItem";
 import PersonIcon from "@material-ui/icons/Person";
 import ScheduleIcon from "@material-ui/icons/Schedule";
+import {MyCalendar} from "../components/TrensCalendar";
 
 
 const useStyles = makeStyles((theme) => ({
@@ -44,7 +45,7 @@ const useStyles = makeStyles((theme) => ({
         marginTop: theme.spacing(30),
         marginRight: theme.spacing(2),
         [theme.breakpoints.up(600 + theme.spacing(2) * 2)]: {
-            width: 600,
+            width: 800,
             marginLeft: 'auto',
             marginRight: 'auto',
         },
@@ -327,6 +328,10 @@ export const NoutPage = () => {
                         </Grid>
                     </>
                 )}
+            </Paper>
+            <Paper className={classes.fixedHeight} align='left'>
+                <Typography variant="h4" align='center' color="textPrimary" gutterBottom> График тренировок </Typography>
+                <MyCalendar />
             </Paper>
         </main>
     )

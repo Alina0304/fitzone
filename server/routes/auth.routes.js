@@ -3,11 +3,8 @@ const dateFormat = require('dateformat')
 const path = require('path')
 const fs = require('file-system')
 //хеширование паролей
-const mailer=require('../config/nodemailer')
-const formidableMiddleware = require('formidable')
 const bcrypt = require('bcryptjs')
 const jwt = require ('jsonwebtoken')
-const mysql=require('mysql')
 const db=require('../config/db.conn')
 
 
@@ -24,7 +21,6 @@ router.post(
     ],
     async (req, res) => {
         try{
-            //console.log('Body: ', req.body);
             const errors = validationResult(req);
             if(!errors.isEmpty()){
                 return res.status(400).json({
@@ -37,13 +33,10 @@ router.post(
 
             const candidate="SELECT (email) FROM fit.auth WHERE email=?"
            db.query(candidate, [email],(err, result)=>{
-                console.log("EMAIL",email);
-                console.log("Результат выборки",result);
                 if(result.length==0){
                     console.log("ТУТ")
                     //шифрование пароля
                     const hashedPassword = bcrypt.hashSync(password,12);
-                    console.log("Захешированный пароль", hashedPassword)
                     const sqlInsert="INSERT INTO fit.auth (email, pass) VALUES (?,?);"
                     db.query(sqlInsert,[email, hashedPassword], (err, result)=>{
                         console.log("INSERT",result);
@@ -101,9 +94,6 @@ router.post('/login',
 
             const authSelect='SELECT idauth,email, pass, role FROM fit.auth WHERE email=?'
             db.query(authSelect, [email],(err, result)=>{
-                console.log("EMAIL",email);
-                console.log("PAss",password);
-                console.log("Результат выборки",result);
                 if(result.length==0){
                     return res.status(400).json({message:'Пользователь не найден'})
                 }
@@ -118,7 +108,6 @@ router.post('/login',
                     {expiresIn: '1h'}
 
                 )
-                console.log("token", token)
                 res.json({token, userId: result[0].idauth, role: result[0].role, email: result[0].email});
 
             });
@@ -132,21 +121,4 @@ router.post('/login',
 
 
     })
-
-/*router.post(
-    '/upload',
-    async (req, res) => {
-        try{
-
-            console.log(req.body)
-            console.log(req.fileName)
-            const data = req.body.data.replace(/^data:image\/\w+;base64,/, "");
-            const buf = Buffer.from(data, 'base64')
-            fs.writeFile(path.join(__dirname, '../temp/avatars/',req.body.fileName), buf)
-            res.status(200).json({message:"Запрос обработан"});
-        }catch (e) {
-            res.status(500).json({message:"Что-то пошло не так, поробуйте снова"});
-        }
-    })
-*/
 module.exports=router

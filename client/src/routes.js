@@ -14,6 +14,7 @@ import {RegistrationPage} from "./pages/RegistrationPage";
 import {PayInfo} from "./pages/PayInfo";
 import {NoutPage} from "./pages/NoutPage";
 import {ChangePage} from "./pages/ChangePage";
+import {AlertPass} from "./components/Message";
 
 
 //Модуль маршрутизации
@@ -113,6 +114,9 @@ export const useRoutes = isAuthenticated => {
                 </Route>
                 <Route path="/registration" exact>
                     <RegistrationPage/>
+                </Route>
+                <Route path="/message" exact>
+                    <AlertPass/>
                 </Route>
             </Switch>
         )
